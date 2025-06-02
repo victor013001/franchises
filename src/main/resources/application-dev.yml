@@ -1,6 +1,6 @@
 spring:
   webflux:
-    base-path: /archetype
+    base-path: /franchises
   r2dbc:
     url: r2dbc:${DB}://${DB_URL}:${DB_PORT}/${DB_SCHEMA}
     username: ${DB_USERNAME}
@@ -27,8 +27,6 @@ management:
         enabled: false
       show-details: "always"
   health:
-    circuitbreakers:
-      enabled: true
     diskspace:
       enabled: false
     r2dbc:
@@ -37,54 +35,3 @@ management:
       enabled: false
     refresh:
       enabled: false
-
-service:
-  base-url: baseUrl
-  timeout: 1000
-
-resilience4j.circuitbreaker:
-  circuit-breaker-aspect-order: 1
-  configs:
-    default:
-      register-health-indicator: true
-  instances:
-    service:
-      base-config: default
-      failure-rate-threshold: 50
-      slow-call-rate-threshold: 50
-      slow-call-duration-threshold: 2s
-      sliding-window-size: 5
-      minimum-number-of-calls: 5
-      wait-duration-in-open-state: 25s
-      max-wait-duration-in-half-open-state: 5s
-      permitted-number-of-calls-in-half-open-state: 2
-      automatic-transition-from-open-to-half-open-enabled: false
-      record-exceptions: java.util.concurrent.TimeoutException
-
-resilience4j:
-  retry:
-    configs:
-      default:
-        maxAttempts: 3
-        waitDuration: 2000ms
-        enableExponentialBackoff: true
-        exponentialBackoffMultiplier: 2.0
-        maxWaitDuration: 10000ms
-        initialInterval: 500ms
-      instances:
-        serviceRetry:
-          maxAttempts: 5
-          waitDuration: 1000ms
-          enableExponentialBackoff: true
-          exponentialBackoffMultiplier: 1.5
-          maxWaitDuration: 10000ms
-          initialInterval: 500ms
-  bulkhead:
-    configs:
-      default:
-        maxConcurrentCalls: 10
-        maxWaitDuration: 500ms
-    instances:
-      serviceBulkhead:
-        maxConcurrentCalls: 5
-        maxWaitDuration: 1s

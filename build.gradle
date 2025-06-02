@@ -33,12 +33,6 @@ dependencies {
 	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
-	//FAULT TOLERANCE
-	implementation 'io.github.resilience4j:resilience4j-spring-boot2:2.2.0'
-	implementation 'io.github.resilience4j:resilience4j-reactor:2.2.0'
-	implementation 'io.github.resilience4j:resilience4j-retry'
-	implementation 'io.github.resilience4j:resilience4j-bulkhead'
-
 	//EXTERNAL
 	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
@@ -48,22 +42,21 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.4'
 
 	//DATABASE
-	runtimeOnly 'org.postgresql:postgresql'
-	runtimeOnly 'org.postgresql:r2dbc-postgresql'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'io.asyncer:r2dbc-mysql'
 	runtimeOnly 'org.flywaydb:flyway-core'
-  	runtimeOnly 'org.flywaydb:flyway-database-postgresql'
+	implementation 'org.flywaydb:flyway-mysql'
 
 	//TESTING
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
 	testImplementation 'org.mockito:mockito-junit-jupiter:5.10.0'
-	testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock:4.1.2'
 
 	//TEST CONTAINER
 	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation 'org.testcontainers:postgresql'
+	testImplementation 'org.testcontainers:mysql'
 	testImplementation 'org.testcontainers:r2dbc'
 }
 
