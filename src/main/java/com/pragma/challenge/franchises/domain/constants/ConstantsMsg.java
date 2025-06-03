@@ -16,4 +16,9 @@ public class ConstantsMsg {
   public static final String BRANCH_ALREADY_EXISTS_MSG =
       "The branch could not be created due to a data conflict.";
   public static final String FRANCHISE_NOT_FOUND_MSG = "The franchise provided was not found.";
+  public static final String PRODUCT_CREATED_SUCCESSFULLY_MSG =
+      "The product was created successfully and added to the branch.";
+  public static final String PRODUCT_ALREADY_EXISTS_MSG =
+      "The product could not be created due to a data conflict.";
+  public static final String BRANCH_NOT_FOUND_MSG = "The branch provided was not found.";
 }

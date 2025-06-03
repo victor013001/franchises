@@ -31,4 +31,16 @@ public class BranchPersistenceAdapter implements BranchPersistencePort {
     log.info("{} Checking if Branch exists by name: {}.", LOG_PREFIX, name);
     return branchRepository.existsByName(name);
   }
+
+  @Override
+  public Mono<Boolean> branchExistsByUuid(String uuid) {
+    log.info("{} Checking if the Branch exists by uuid: {}.", LOG_PREFIX, uuid);
+    return branchRepository.existsByUuid(uuid);
+  }
+
+  @Override
+  public Mono<Long> getBranchIdByUuid(String uuid) {
+    log.info("{} Getting Branch id by uuid: {}.", LOG_PREFIX, uuid);
+    return branchRepository.getIdByUuid(uuid);
+  }
 }
