@@ -36,7 +36,7 @@ jobs:
       - name: Build Docker image
         id: build_image
         run: |
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t $ECR_REPOSITORY:latest .
           docker save -o /tmp/docker_image.tar $ECR_REPOSITORY:latest
 
       - name: Upload Docker image
