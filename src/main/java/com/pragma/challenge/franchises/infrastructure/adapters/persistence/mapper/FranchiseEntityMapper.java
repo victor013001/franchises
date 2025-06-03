@@ -10,6 +10,7 @@ import org.mapstruct.*;
     builder = @Builder(disableBuilder = true),
     componentModel = MappingConstants.ComponentModel.SPRING)
 public interface FranchiseEntityMapper {
+  @Mapping(target = "id", ignore = true)
   @Mapping(target = "branches", ignore = true)
   FranchiseEntity toEntity(Franchise franchise);
 

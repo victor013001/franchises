@@ -6,4 +6,5 @@ import lombok.experimental.UtilityClass;
 @SuppressWarnings("java:S1075")
 public class ConstantsRoute {
   public static final String FRANCHISE_BASE_PATH = "/api/v1/franchise";
+  public static final String BRANCH_BASE_PATH = "/api/v1/branch";
 }

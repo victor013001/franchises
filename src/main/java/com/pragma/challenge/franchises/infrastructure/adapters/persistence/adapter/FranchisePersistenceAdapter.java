@@ -31,4 +31,16 @@ public class FranchisePersistenceAdapter implements FranchisePersistencePort {
     log.info("{} Checking if Franchise exists by name: {}.", LOG_PREFIX, name);
     return franchiseRepository.existsByName(name);
   }
+
+  @Override
+  public Mono<Boolean> franchiseExistsByUuid(String uuid) {
+    log.info("{} Checking if Franchise exists by uuid: {}.", LOG_PREFIX, uuid);
+    return franchiseRepository.existsByUuid(uuid);
+  }
+
+  @Override
+  public Mono<Long> getFranchiseIdByUuid(String uuid) {
+    log.info("{} Getting Franchise id by uuid: {}.", LOG_PREFIX, uuid);
+    return franchiseRepository.getIdByUuid(uuid);
+  }
 }
