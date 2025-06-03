@@ -1,0 +1,43 @@
+package com.pragma.challenge.franchises.domain.usecase;
+
+import com.pragma.challenge.franchises.domain.api.BranchServicePort;
+import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BranchAlreadyExists;
+import com.pragma.challenge.franchises.domain.exceptions.standard_exception.FranchiseNotFound;
+import com.pragma.challenge.franchises.domain.model.Branch;
+import com.pragma.challenge.franchises.domain.spi.BranchPersistencePort;
+import com.pragma.challenge.franchises.domain.spi.FranchisePersistencePort;
+import com.pragma.challenge.franchises.domain.validation.ValidNotBlank;
+import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
+
+@RequiredArgsConstructor
+public class BranchUseCase implements BranchServicePort {
+
+  private final BranchPersistencePort branchPersistencePort;
+  private final FranchisePersistencePort franchisePersistencePort;
+
+  @Override
+  public Mono<Branch> addToFranchise(Branch branch) {
+    return Mono.fromCallable(
+            () -> {
+              ValidNotBlank.valid(branch);
+              return branch;
+            })
+        .flatMap(
+            validBranch ->
+                franchisePersistencePort
+                    .franchiseExistsByUuid(branch.franchiseUuid())
+                    .filter(Boolean.TRUE::equals)
+                    .switchIfEmpty(Mono.error(FranchiseNotFound::new))
+                    .flatMap(
+                        franchiseExists ->
+                            branchPersistencePort.branchExistsByName(validBranch.name()))
+                    .filter(Boolean.FALSE::equals)
+                    .switchIfEmpty(Mono.error(BranchAlreadyExists::new))
+                    .flatMap(
+                        newName ->
+                            franchisePersistencePort.getFranchiseIdByUuid(branch.franchiseUuid()))
+                    .flatMap(
+                        franchiseId -> branchPersistencePort.saveBranch(validBranch, franchiseId)));
+  }
+}

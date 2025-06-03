@@ -1,6 +1,7 @@
 package com.pragma.challenge.franchises.infrastructure.entrypoints.util;
 
 import com.pragma.challenge.franchises.domain.exceptions.StandardError;
+import com.pragma.challenge.franchises.domain.model.Branch;
 import com.pragma.challenge.franchises.domain.model.Franchise;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -31,5 +32,12 @@ public final class SwaggerResponses {
   @AllArgsConstructor
   public static class DefaultFranchiseResponse {
     private Franchise data;
+  }
+
+  @Data
+  @Schema(name = "DefaultBranchResponse")
+  @AllArgsConstructor
+  public static class DefaultBranchResponse {
+    private Branch data;
   }
 }

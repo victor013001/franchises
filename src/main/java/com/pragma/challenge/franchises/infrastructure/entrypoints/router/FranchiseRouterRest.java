@@ -1,4 +1,4 @@
-package com.pragma.challenge.franchises.infrastructure;
+package com.pragma.challenge.franchises.infrastructure.entrypoints.router;
 
 import static com.pragma.challenge.franchises.domain.constants.ConstantsRoute.FRANCHISE_BASE_PATH;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
@@ -87,7 +87,7 @@ public class FranchiseRouterRest {
                                           SwaggerResponses.DefaultErrorResponse.class)))
                 })),
   })
-  public RouterFunction<ServerResponse> routerFunction(FranchiseHandler franchiseHandler) {
+  public RouterFunction<ServerResponse> franchiseRouterFunction(FranchiseHandler franchiseHandler) {
     return nest(path(FRANCHISE_BASE_PATH), route(POST(""), franchiseHandler::createFranchise));
   }
 }

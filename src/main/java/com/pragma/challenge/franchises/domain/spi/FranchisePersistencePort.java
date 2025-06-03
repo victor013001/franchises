@@ -19,4 +19,20 @@ public interface FranchisePersistencePort {
    * @return Publisher that emits flag if franchise name already exists
    */
   Mono<Boolean> franchiseExistsByName(String name);
+
+  /**
+   * Check if franchise exists by uuid
+   *
+   * @param uuid franchise uuid
+   * @return Publisher that emits flag if franchise exists
+   */
+  Mono<Boolean> franchiseExistsByUuid(String uuid);
+
+  /**
+   * Get franchise id by uuid
+   *
+   * @param uuid franchise uuid
+   * @return Publisher that emits the franchise id
+   */
+  Mono<Long> getFranchiseIdByUuid(String uuid);
 }

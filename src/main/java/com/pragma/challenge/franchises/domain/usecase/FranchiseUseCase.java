@@ -15,11 +15,10 @@ public class FranchiseUseCase implements FranchiseServicePort {
 
   @Override
   public Mono<Franchise> createFranchise(Franchise franchise) {
-    return Mono.just(franchise)
-        .flatMap(
-            franchise1 -> {
-              ValidNotBlank.valid(franchise1);
-              return Mono.just(franchise1);
+    return Mono.fromCallable(
+            () -> {
+              ValidNotBlank.valid(franchise);
+              return franchise;
             })
         .flatMap(
             validFranchise ->
