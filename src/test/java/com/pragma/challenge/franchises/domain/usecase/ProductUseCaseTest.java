@@ -2,6 +2,7 @@ package com.pragma.challenge.franchises.domain.usecase;
 
 import static com.pragma.challenge.franchises.util.ProductDataUtil.getInvalidProduct;
 import static com.pragma.challenge.franchises.util.ProductDataUtil.getProduct;
+import static com.pragma.challenge.franchises.util.ProductDataUtil.getProductWithUuid;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -132,21 +133,24 @@ class ProductUseCaseTest {
 
   @Test
   void updateProductSuccess() {
-    var product = getProduct();
+    var product = getProductWithUuid();
 
     when(productPersistencePort.productExistsByUuid(product.uuid())).thenReturn(Mono.just(true));
     when(productPersistencePort.updateProduct(product.uuid(), product.stock(), product.name()))
         .thenReturn(Mono.empty());
+    when(productPersistencePort.checkNewProductNameUnique(anyString(), anyString()))
+        .thenReturn(Mono.just(0));
 
     StepVerifier.create(productUseCase.updateProduct(product)).verifyComplete();
 
     verify(productPersistencePort).productExistsByUuid(product.uuid());
     verify(productPersistencePort).updateProduct(product.uuid(), product.stock(), product.name());
+    verify(productPersistencePort).checkNewProductNameUnique(anyString(), anyString());
   }
 
   @Test
   void updateProductNotFound() {
-    var product = getProduct();
+    var product = getProductWithUuid();
 
     when(productPersistencePort.productExistsByUuid(product.uuid())).thenReturn(Mono.just(false));
 
@@ -156,11 +160,12 @@ class ProductUseCaseTest {
 
     verify(productPersistencePort).productExistsByUuid(product.uuid());
     verify(productPersistencePort, never()).updateProduct(any(), anyInt(), anyString());
+    verify(productPersistencePort, never()).checkNewProductNameUnique(anyString(), anyString());
   }
 
   @Test
   void updateProductInvalid() {
-    Product invalidProduct = getInvalidProduct();
+    var invalidProduct = getInvalidProduct();
 
     StepVerifier.create(productUseCase.updateProduct(invalidProduct))
         .expectError(BadRequest.class)
@@ -168,5 +173,23 @@ class ProductUseCaseTest {
 
     verify(productPersistencePort, never()).productExistsByUuid(anyString());
     verify(productPersistencePort, never()).updateProduct(any(), anyInt(), anyString());
+    verify(productPersistencePort, never()).checkNewProductNameUnique(anyString(), anyString());
+  }
+
+  @Test
+  void updateProductNameInvalid() {
+    var product = getProductWithUuid();
+
+    when(productPersistencePort.productExistsByUuid(product.uuid())).thenReturn(Mono.just(true));
+    when(productPersistencePort.checkNewProductNameUnique(anyString(), anyString()))
+        .thenReturn(Mono.just(1));
+
+    StepVerifier.create(productUseCase.updateProduct(product))
+        .expectError(BadRequest.class)
+        .verify();
+
+    verify(productPersistencePort).productExistsByUuid(product.uuid());
+    verify(productPersistencePort, never()).updateProduct(any(), anyInt(), anyString());
+    verify(productPersistencePort).checkNewProductNameUnique(anyString(), anyString());
   }
 }

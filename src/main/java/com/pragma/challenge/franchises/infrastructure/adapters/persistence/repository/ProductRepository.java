@@ -24,4 +24,13 @@ public interface ProductRepository extends ReactiveCrudRepository<ProductEntity,
             WHERE uuid = :uuid
             """)
   Mono<Void> updateProductByUuid(String uuid, Integer stock, String name);
+
+  @Query(
+      """
+            SELECT CASE WHEN COUNT(*) > 0
+                THEN TRUE ELSE FALSE END
+            FROM product
+            WHERE name = :productName AND uuid <> :productUuid
+            """)
+  Mono<Integer> newNameUnique(String name, String uuid);
 }
