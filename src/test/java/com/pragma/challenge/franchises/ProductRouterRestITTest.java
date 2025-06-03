@@ -10,6 +10,7 @@ import static com.pragma.challenge.franchises.util.ProductEntityDataUtil.getProd
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.pragma.challenge.franchises.domain.constants.ConstantsMsg;
 import com.pragma.challenge.franchises.domain.enums.ServerResponses;
 import com.pragma.challenge.franchises.domain.exceptions.StandardError;
 import com.pragma.challenge.franchises.domain.model.Product;
@@ -40,6 +41,7 @@ class ProductRouterRestITTest {
   @Autowired FranchiseRepository franchiseRepository;
 
   private String branchUuid;
+  private String productUuid;
 
   @BeforeEach
   void setUp() {
@@ -49,7 +51,10 @@ class ProductRouterRestITTest {
         branchRepository.save(getBranchEntityFixedName(franchiseSaved.getId())).block();
     assert branchSaved != null;
     branchUuid = branchSaved.getUuid();
-    productRepository.save(getProductEntityFixedName(branchSaved.getId())).block();
+    var productSaved =
+        productRepository.save(getProductEntityFixedName(branchSaved.getId())).block();
+    assert productSaved != null;
+    productUuid = productSaved.getUuid();
   }
 
   @AfterEach
@@ -120,6 +125,47 @@ class ProductRouterRestITTest {
               assertNotNull(error.getDescription());
               assertEquals(
                   ServerResponses.PRODUCT_ALREADY_EXISTS.getMessage(), error.getDescription());
+            });
+  }
+
+  @Test
+  void deleteProduct() {
+    webTestClient
+        .delete()
+        .uri(String.format("%s/%s", PRODUCT_BASE_PATH, productUuid))
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(
+            new ParameterizedTypeReference<DefaultServerResponse<String, StandardError>>() {})
+        .consumeWith(
+            exchangeResult -> {
+              var response = exchangeResult.getResponseBody();
+              assertNotNull(response);
+              var data = response.data();
+              assertNotNull(data);
+              assertEquals(ConstantsMsg.PRODUCT_DELETED_SUCCESSFULLY_MSG, data);
+            });
+  }
+
+  @Test
+  void deleteNotFoundProduct() {
+    webTestClient
+        .delete()
+        .uri(String.format("%s/%s", PRODUCT_BASE_PATH, "1"))
+        .exchange()
+        .expectStatus()
+        .is4xxClientError()
+        .expectBody(
+            new ParameterizedTypeReference<DefaultServerResponse<Object, StandardError>>() {})
+        .consumeWith(
+            exchangeResult -> {
+              var response = exchangeResult.getResponseBody();
+              assertNotNull(response);
+              var error = response.error();
+              assertNotNull(error);
+              assertNotNull(error.getDescription());
+              assertEquals(ServerResponses.PRODUCT_NOT_FOUND.getMessage(), error.getDescription());
             });
   }
 }

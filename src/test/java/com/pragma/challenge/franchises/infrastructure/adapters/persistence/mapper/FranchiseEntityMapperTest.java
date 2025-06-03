@@ -31,6 +31,16 @@ class FranchiseEntityMapperTest {
     assertEntity(franchise, franchiseEntity);
   }
 
+  @Test
+  void testToModelWithNullInput() {
+    assertNull(franchiseMapper.toModel(null));
+  }
+
+  @Test
+  void testToEntityWithNullInput() {
+    assertNull(franchiseMapper.toEntity(null));
+  }
+
   private void assertEntity(Franchise expected, FranchiseEntity actual) {
     assertNotNull(actual);
     assertNotNull(actual.getUuid());

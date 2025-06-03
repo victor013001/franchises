@@ -11,10 +11,17 @@ import org.mapstruct.*;
     componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ProductEntityMapper {
   @Mapping(target = "id", ignore = true)
-  ProductEntity toEntity(Product product, Long branchId);
+  ProductEntity mapInternal(Product product, Long branchId);
 
   @Mapping(target = "branchUuid", ignore = true)
   Product toModel(ProductEntity productEntity);
+
+  default ProductEntity toEntity(Product product, Long branchId) {
+    if (product == null || branchId == null) {
+      return null;
+    }
+    return mapInternal(product, branchId);
+  }
 
   @AfterMapping
   default void setUuid(@MappingTarget ProductEntity productEntity) {

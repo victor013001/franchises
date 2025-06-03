@@ -8,4 +8,5 @@ public class ConstantsRoute {
   public static final String FRANCHISE_BASE_PATH = "/api/v1/franchise";
   public static final String BRANCH_BASE_PATH = "/api/v1/branch";
   public static final String PRODUCT_BASE_PATH = "/api/v1/product";
+  public static final String PRODUCT_UUID_PARAM = "productUuid";
 }

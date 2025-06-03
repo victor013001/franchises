@@ -22,13 +22,25 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
         .save(productEntityMapper.toEntity(product, branchId))
         .map(productEntityMapper::toModel)
         .doOnSuccess(
-            branchSaved ->
-                log.info("{} Branch saved with uuid: {}", LOG_PREFIX, branchSaved.uuid()));
+            productSaved ->
+                log.info("{} Product saved with uuid: {}", LOG_PREFIX, productSaved.uuid()));
   }
 
   @Override
   public Mono<Boolean> productExistsByName(String name) {
-    log.info("{} Checking if Branch exists by name: {}.", LOG_PREFIX, name);
+    log.info("{} Checking if Product exists by name: {}.", LOG_PREFIX, name);
     return productRepository.existsByName(name);
+  }
+
+  @Override
+  public Mono<Boolean> productExistsByUuid(String productUuid) {
+    log.info("{} Checking if Product exists by uuid: {}.", LOG_PREFIX, productUuid);
+    return productRepository.existsByUuid(productUuid);
+  }
+
+  @Override
+  public Mono<Void> deleteByUuid(String productUuid) {
+    log.info("{} Deleting Product with uuid: {}.", LOG_PREFIX, productUuid);
+    return productRepository.deleteByUuid(productUuid);
   }
 }

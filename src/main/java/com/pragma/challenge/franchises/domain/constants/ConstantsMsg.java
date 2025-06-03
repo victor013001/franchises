@@ -21,4 +21,7 @@ public class ConstantsMsg {
   public static final String PRODUCT_ALREADY_EXISTS_MSG =
       "The product could not be created due to a data conflict.";
   public static final String BRANCH_NOT_FOUND_MSG = "The branch provided was not found.";
+  public static final String PRODUCT_DELETED_SUCCESSFULLY_MSG =
+      "The product was deleted successfully.";
+  public static final String PRODUCT_NOT_FOUND_MSG = "The product provided was not found.";
 }

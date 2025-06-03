@@ -1,70 +1,146 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.3.6'
-	id 'io.spring.dependency-management' version '1.1.6'
+    id 'java'
+    id 'org.springframework.boot' version '3.3.6'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'jacoco'
+    id 'info.solidsoft.pitest' version '1.15.0'
 }
 
 group = 'com.pragma.challenge'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.13"
+}
+
+pitest {
+    targetClasses = ["${project.group}.franchises.*"] as Iterable<? extends String> // List of packages to scan
+    excludedClasses = [
+            '*entity.**',
+            '*dto.**',
+            '*model.**',
+            '*exceptions.**',
+            '*constants.**',
+            '*config.**',
+            '*enums.**',
+            '*util.**',
+            '*router.**',
+    ]
+    threads = 3                                     // Number of threads to use
+    junit5PluginVersion = '1.2.2'                    // Required if using JUnit5
+    pitestVersion = '1.18.2'
+    excludedMethods = ['toString', 'hashCode']      // Some common methods that don't require tests usually
+    outputFormats = ['XML', 'HTML']                 // HTML is included by default
+    useClasspathFile = true
+    verbose = false
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 ext {
-	set('springCloudVersion', "2023.0.4")
+    set('springCloudVersion', "2023.0.4")
 }
 
 dependencies {
-	//SPRING
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'org.springframework.boot:spring-boot-starter-aop'
+    //SPRING
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 
-	//OBSERVABILITY
-	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
-	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    //OBSERVABILITY
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
-	//EXTERNAL
-	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
-	compileOnly 'org.projectlombok:lombok:1.18.24'
-	annotationProcessor 'org.projectlombok:lombok:1.18.24'
-	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
-	implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.4'
+    //EXTERNAL
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.4'
 
-	//DATABASE
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	runtimeOnly 'io.asyncer:r2dbc-mysql'
-	runtimeOnly 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-mysql'
+    //DATABASE
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'io.asyncer:r2dbc-mysql'
+    runtimeOnly 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
 
-	//TESTING
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'io.projectreactor:reactor-test'
-	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
-	testImplementation 'org.mockito:mockito-junit-jupiter:5.10.0'
+    //TESTING
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.10.0'
 
-	//TEST CONTAINER
-	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation 'org.testcontainers:mysql'
-	testImplementation 'org.testcontainers:r2dbc'
+    //TEST CONTAINER
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:mysql'
+    testImplementation 'org.testcontainers:r2dbc'
 }
 
 dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
+    finalizedBy('jacocoTestReport')
+}
+
+def jacocoExcludes = [
+        '**/entity/**',
+        '**/dto/**',
+        '**/model/**',
+        '**/exceptions/**',
+        '**/constants/**',
+        '**/config/**',
+        '**/enums/**',
+        '**/util/**',
+]
+
+def mainClassDirsProvider = layout.buildDirectory.dir("classes/java/main").map { dir ->
+    fileTree(dir) {
+        exclude jacocoExcludes
+    }
+}
+
+tasks.named('jacocoTestReport') {
+    dependsOn('test')
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+    classDirectories.setFrom(mainClassDirsProvider)
+}
+
+tasks.named('jacocoTestCoverageVerification') {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.8
+            }
+        }
+    }
+    classDirectories.setFrom(mainClassDirsProvider)
+}
+
+tasks.register('verify') {
+    dependsOn('test')
+    dependsOn('jacocoTestCoverageVerification')
+}
+
+tasks.named('build') {
+    dependsOn('verify')
 }

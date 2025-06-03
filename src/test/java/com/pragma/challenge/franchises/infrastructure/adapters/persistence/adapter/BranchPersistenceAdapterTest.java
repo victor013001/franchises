@@ -57,4 +57,31 @@ class BranchPersistenceAdapterTest {
 
     verify(branchRepository).existsByName(name);
   }
+
+  @Test
+  void branchExistsByUuid() {
+    var uuid = "683f017d-2780-8004-b45c-278ac08f8757";
+
+    when(branchRepository.existsByUuid(anyString())).thenReturn(Mono.just(true));
+
+    StepVerifier.create(branchPersistenceAdapter.branchExistsByUuid(uuid))
+        .expectNext(Boolean.TRUE)
+        .verifyComplete();
+
+    verify(branchRepository).existsByUuid(uuid);
+  }
+
+  @Test
+  void getBranchIdByUuid() {
+    var uuid = "683f017d-2780-8004-b45c-278ac08f8757";
+    var branchId = 1L;
+
+    when(branchRepository.getIdByUuid(anyString())).thenReturn(Mono.just(branchId));
+
+    StepVerifier.create(branchPersistenceAdapter.getBranchIdByUuid(uuid))
+        .expectNext(branchId)
+        .verifyComplete();
+
+    verify(branchRepository).getIdByUuid(uuid);
+  }
 }

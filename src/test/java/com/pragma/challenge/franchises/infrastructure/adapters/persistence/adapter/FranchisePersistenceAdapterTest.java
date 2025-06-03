@@ -52,4 +52,31 @@ class FranchisePersistenceAdapterTest {
         .verifyComplete();
     verify(franchiseRepository).existsByName(name);
   }
+
+  @Test
+  void franchiseExistsByUuid() {
+    var uuid = "683f017d-2780-8004-b45c-278ac08f8757";
+
+    when(franchiseRepository.existsByUuid(anyString())).thenReturn(Mono.just(true));
+
+    StepVerifier.create(franchisePersistenceAdapter.franchiseExistsByUuid(uuid))
+        .expectNext(Boolean.TRUE)
+        .verifyComplete();
+
+    verify(franchiseRepository).existsByUuid(uuid);
+  }
+
+  @Test
+  void getFranchiseIdByUuid() {
+    var uuid = "683f017d-2780-8004-b45c-278ac08f8757";
+    var franchiseId = 1L;
+
+    when(franchiseRepository.getIdByUuid(anyString())).thenReturn(Mono.just(franchiseId));
+
+    StepVerifier.create(franchisePersistenceAdapter.getFranchiseIdByUuid(uuid))
+        .expectNext(franchiseId)
+        .verifyComplete();
+
+    verify(franchiseRepository).getIdByUuid(uuid);
+  }
 }

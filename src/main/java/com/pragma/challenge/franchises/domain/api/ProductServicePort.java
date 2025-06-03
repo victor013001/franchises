@@ -11,4 +11,12 @@ public interface ProductServicePort {
    * @return Publisher that emits the created Product
    */
   Mono<Product> addToBranch(Product product);
+
+  /**
+   * Delete a product by uuid
+   *
+   * @param productUuid The product uuid
+   * @return Void Publisher
+   */
+  Mono<Void> deleteProduct(String productUuid);
 }

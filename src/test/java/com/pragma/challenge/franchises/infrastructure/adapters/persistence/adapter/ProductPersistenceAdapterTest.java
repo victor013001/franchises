@@ -59,4 +59,28 @@ class ProductPersistenceAdapterTest {
 
     verify(productRepository).existsByName(anyString());
   }
+
+  @Test
+  void productExistsByUuid() {
+    var uuid = "683f017d-2780-8004-b45c-278ac08f8757";
+
+    when(productRepository.existsByUuid(anyString())).thenReturn(Mono.just(true));
+
+    StepVerifier.create(productPersistenceAdapter.productExistsByUuid(uuid))
+        .expectNext(Boolean.TRUE)
+        .verifyComplete();
+
+    verify(productRepository).existsByUuid(uuid);
+  }
+
+  @Test
+  void deleteByUuid() {
+    var uuid = "683f017d-2780-8004-b45c-278ac08f8757";
+
+    when(productRepository.deleteByUuid(anyString())).thenReturn(Mono.empty());
+
+    StepVerifier.create(productPersistenceAdapter.deleteByUuid(uuid)).verifyComplete();
+
+    verify(productRepository).deleteByUuid(uuid);
+  }
 }
