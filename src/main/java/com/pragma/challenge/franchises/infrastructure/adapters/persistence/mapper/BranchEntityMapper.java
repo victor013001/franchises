@@ -13,8 +13,16 @@ public interface BranchEntityMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "products", ignore = true)
-  BranchEntity toEntity(Branch branch, Long franchiseId);
+  BranchEntity mapInternal(Branch branch, Long franchiseId);
 
+  default BranchEntity toEntity(Branch branch, Long franchiseId) {
+    if (branch == null || franchiseId == null) {
+      return null;
+    }
+    return mapInternal(branch, franchiseId);
+  }
+
+  @Mapping(target = "products", ignore = true)
   @Mapping(target = "franchiseUuid", ignore = true)
   Branch toModel(BranchEntity branchEntity);
 

@@ -32,6 +32,22 @@ class BranchEntityMapperTest {
     assertEntity(branch, franchiseId, branchEntity);
   }
 
+  @Test
+  void testToModelWithNullInput() {
+    assertNull(branchMapper.toModel(null));
+  }
+
+  @Test
+  void testToEntityWithNullInput() {
+    assertNull(branchMapper.toEntity(null, null));
+  }
+
+  @Test
+  void testToEntityWithNullBranch() {
+    Long franchiseId = 1L;
+    assertNull(branchMapper.toEntity(null, franchiseId));
+  }
+
   private void assertEntity(Branch expected, Long franchiseId, BranchEntity actual) {
     assertNotNull(actual);
     assertNotNull(actual.getUuid());

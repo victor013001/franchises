@@ -14,6 +14,7 @@ public interface FranchiseEntityMapper {
   @Mapping(target = "branches", ignore = true)
   FranchiseEntity toEntity(Franchise franchise);
 
+  @Mapping(target = "branches", ignore = true)
   Franchise toModel(FranchiseEntity franchiseEntity);
 
   @AfterMapping

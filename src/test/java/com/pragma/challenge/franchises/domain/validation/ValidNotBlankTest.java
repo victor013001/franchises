@@ -24,6 +24,14 @@ class ValidNotBlankTest {
     }
   }
 
+  static class InvalidNotBlankObject {
+    @NotBlank Integer value;
+
+    InvalidNotBlankObject(Integer value) {
+      this.value = value;
+    }
+  }
+
   @Test
   void testValidNonBlank() {
     var obj = new NotBlankObject("hello");
@@ -45,6 +53,12 @@ class ValidNotBlankTest {
   @Test
   void testNoAnnotationDoesNothing() {
     var obj = new NoAnnotationObject(null);
+    assertDoesNotThrow(() -> ValidNotBlank.valid(obj));
+  }
+
+  @Test
+  void testInvalidAnnotationDoesNothing() {
+    var obj = new InvalidNotBlankObject(null);
     assertDoesNotThrow(() -> ValidNotBlank.valid(obj));
   }
 }

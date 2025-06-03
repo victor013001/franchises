@@ -32,6 +32,16 @@ class ProductEntityMapperTest {
     assertEntity(product, branchId, productEntity);
   }
 
+  @Test
+  void testToModelWithNullInput() {
+    assertNull(productMapper.toModel(null));
+  }
+
+  @Test
+  void testToEntityWithNullInput() {
+    assertNull(productMapper.toEntity(null, null));
+  }
+
   private void assertEntity(Product expected, Long branchId, ProductEntity actual) {
     assertNotNull(actual);
     assertNotNull(actual.getUuid());

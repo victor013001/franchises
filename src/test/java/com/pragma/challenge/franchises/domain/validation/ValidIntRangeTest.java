@@ -19,10 +19,38 @@ class ValidIntRangeTest {
     }
   }
 
+  static class ValidMinIntObject {
+    @Min(1)
+    Integer value;
+
+    ValidMinIntObject(Integer value) {
+      this.value = value;
+    }
+  }
+
+  static class ValidMaxIntObject {
+    @Max(10)
+    Integer value;
+
+    ValidMaxIntObject(Integer value) {
+      this.value = value;
+    }
+  }
+
   static class NoAnnotationIntObject {
     Integer value;
 
     NoAnnotationIntObject(Integer value) {
+      this.value = value;
+    }
+  }
+
+  static class InvalidAnnotationIntObject {
+    @Min(1)
+    @Max(10)
+    String value;
+
+    InvalidAnnotationIntObject(String value) {
       this.value = value;
     }
   }
@@ -35,14 +63,20 @@ class ValidIntRangeTest {
 
   @Test
   void testValueBelowMinThrows() {
-    var obj = new ValidIntObject(0);
+    var obj = new ValidMinIntObject(0);
     assertThrows(BadRequest.class, () -> ValidIntRange.valid(obj));
   }
 
   @Test
   void testValueAboveMaxThrows() {
-    var obj = new ValidIntObject(15);
+    var obj = new ValidMaxIntObject(15);
     assertThrows(BadRequest.class, () -> ValidIntRange.valid(obj));
+  }
+
+  @Test
+  void testInvalidValueThrows() {
+    var obj = new InvalidAnnotationIntObject("15");
+    assertDoesNotThrow(() -> ValidIntRange.valid(obj));
   }
 
   @Test
