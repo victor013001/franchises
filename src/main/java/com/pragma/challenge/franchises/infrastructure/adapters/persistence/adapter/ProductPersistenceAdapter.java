@@ -38,7 +38,6 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
     return productRepository.existsByUuid(productUuid);
   }
 
-  // TODO Throw serverError if error
   @Override
   public Mono<Void> deleteByUuid(String productUuid) {
     log.info("{} Deleting Product with uuid: {}.", LOG_PREFIX, productUuid);
