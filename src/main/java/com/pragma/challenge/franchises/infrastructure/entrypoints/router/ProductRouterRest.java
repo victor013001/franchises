@@ -1,7 +1,11 @@
 package com.pragma.challenge.franchises.infrastructure.entrypoints.router;
 
+import static com.pragma.challenge.franchises.domain.constants.ConstantsRoute.FRANCHISE_UUID_PARAM;
 import static com.pragma.challenge.franchises.domain.constants.ConstantsRoute.PRODUCT_BASE_PATH;
+import static com.pragma.challenge.franchises.domain.constants.ConstantsRoute.PRODUCT_UUID_PARAM;
+import static com.pragma.challenge.franchises.domain.constants.ConstantsRoute.TOP_PRODUCT_BASE_PATH;
 import static org.springframework.web.reactive.function.server.RequestPredicates.DELETE;
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.PATCH;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.path;
@@ -9,7 +13,6 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.n
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 import com.pragma.challenge.franchises.domain.constants.ConstantsMsg;
-import com.pragma.challenge.franchises.domain.constants.ConstantsRoute;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.dto.ProductDto;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.dto.ProductUpdateDto;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.handler.ProductHandler;
@@ -114,7 +117,7 @@ public class ProductRouterRest {
                 parameters = {
                   @Parameter(
                       in = ParameterIn.PATH,
-                      name = ConstantsRoute.PRODUCT_UUID_PARAM,
+                      name = PRODUCT_UUID_PARAM,
                       description = "Product uuid to delete")
                 },
                 responses = {
@@ -171,7 +174,7 @@ public class ProductRouterRest {
                 parameters = {
                   @Parameter(
                       in = ParameterIn.PATH,
-                      name = ConstantsRoute.PRODUCT_UUID_PARAM,
+                      name = PRODUCT_UUID_PARAM,
                       description = "Product uuid to delete")
                 },
                 requestBody =
@@ -222,6 +225,63 @@ public class ProductRouterRest {
                                   @Schema(
                                       implementation =
                                           SwaggerResponses.DefaultErrorResponse.class)))
+                })),
+    @RouterOperation(
+        path = PRODUCT_BASE_PATH + TOP_PRODUCT_BASE_PATH,
+        method = RequestMethod.GET,
+        beanClass = ProductHandler.class,
+        beanMethod = "getFranchiseTopBranchesProduct",
+        operation =
+            @Operation(
+                operationId = "getFranchiseTopBranchesProduct",
+                summary = "Get Branches top product for a franchise",
+                parameters = {
+                  @Parameter(
+                      in = ParameterIn.PATH,
+                      name = FRANCHISE_UUID_PARAM,
+                      description = "Franchise uuid to find branches top product")
+                },
+                responses = {
+                  @ApiResponse(
+                      responseCode = "200",
+                      description = ConstantsMsg.PRODUCT_UPDATED_SUCCESSFULLY_MSG,
+                      content =
+                          @Content(
+                              mediaType = MediaType.APPLICATION_JSON_VALUE,
+                              schema =
+                                  @Schema(
+                                      implementation =
+                                          SwaggerResponses.DefaultTopProductResponse.class))),
+                  @ApiResponse(
+                      responseCode = "400",
+                      description = ConstantsMsg.BAD_REQUEST_MSG,
+                      content =
+                          @Content(
+                              mediaType = MediaType.APPLICATION_JSON_VALUE,
+                              schema =
+                                  @Schema(
+                                      implementation =
+                                          SwaggerResponses.DefaultErrorResponse.class))),
+                  @ApiResponse(
+                      responseCode = "404",
+                      description = ConstantsMsg.FRANCHISE_NOT_FOUND_MSG,
+                      content =
+                          @Content(
+                              mediaType = MediaType.APPLICATION_JSON_VALUE,
+                              schema =
+                                  @Schema(
+                                      implementation =
+                                          SwaggerResponses.DefaultErrorResponse.class))),
+                  @ApiResponse(
+                      responseCode = "500",
+                      description = ConstantsMsg.SERVER_ERROR_MSG,
+                      content =
+                          @Content(
+                              mediaType = MediaType.APPLICATION_JSON_VALUE,
+                              schema =
+                                  @Schema(
+                                      implementation =
+                                          SwaggerResponses.DefaultErrorResponse.class)))
                 }))
   })
   public RouterFunction<ServerResponse> productRouterFunction(ProductHandler productHandler) {
@@ -229,10 +289,11 @@ public class ProductRouterRest {
         path(PRODUCT_BASE_PATH),
         route(POST(""), productHandler::createProduct)
             .andRoute(
-                DELETE(String.format("/{%s}", ConstantsRoute.PRODUCT_UUID_PARAM)),
-                productHandler::deleteProduct)
+                DELETE(String.format("/{%s}", PRODUCT_UUID_PARAM)), productHandler::deleteProduct)
             .andRoute(
-                PATCH(String.format("/{%s}", ConstantsRoute.PRODUCT_UUID_PARAM)),
-                productHandler::updateProduct));
+                PATCH(String.format("/{%s}", PRODUCT_UUID_PARAM)), productHandler::updateProduct)
+            .andRoute(
+                GET(String.format("%s/{%s}", TOP_PRODUCT_BASE_PATH, FRANCHISE_UUID_PARAM)),
+                productHandler::getFranchiseTopBranchesProduct));
   }
 }

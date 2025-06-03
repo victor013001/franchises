@@ -4,7 +4,9 @@ import com.pragma.challenge.franchises.domain.exceptions.StandardError;
 import com.pragma.challenge.franchises.domain.model.Branch;
 import com.pragma.challenge.franchises.domain.model.Franchise;
 import com.pragma.challenge.franchises.domain.model.Product;
+import com.pragma.challenge.franchises.domain.model.TopProduct;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -47,5 +49,12 @@ public final class SwaggerResponses {
   @AllArgsConstructor
   public static class DefaultProductResponse {
     private Product data;
+  }
+
+  @Data
+  @Schema(name = "DefaultTopProductResponse")
+  @AllArgsConstructor
+  public static class DefaultTopProductResponse {
+    private List<TopProduct> data;
   }
 }

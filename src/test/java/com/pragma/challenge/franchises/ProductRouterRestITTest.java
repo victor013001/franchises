@@ -1,6 +1,7 @@
 package com.pragma.challenge.franchises;
 
 import static com.pragma.challenge.franchises.domain.constants.ConstantsRoute.PRODUCT_BASE_PATH;
+import static com.pragma.challenge.franchises.domain.constants.ConstantsRoute.TOP_PRODUCT_BASE_PATH;
 import static com.pragma.challenge.franchises.util.BranchEntityDataUtil.getBranchEntityFixedName;
 import static com.pragma.challenge.franchises.util.FranchiseEntityDataUtil.getFranchiseEntity;
 import static com.pragma.challenge.franchises.util.ProductDtoDataUtil.getBadProductDto;
@@ -16,10 +17,12 @@ import com.pragma.challenge.franchises.domain.constants.ConstantsMsg;
 import com.pragma.challenge.franchises.domain.enums.ServerResponses;
 import com.pragma.challenge.franchises.domain.exceptions.StandardError;
 import com.pragma.challenge.franchises.domain.model.Product;
+import com.pragma.challenge.franchises.domain.model.TopProduct;
 import com.pragma.challenge.franchises.infrastructure.adapters.persistence.repository.BranchRepository;
 import com.pragma.challenge.franchises.infrastructure.adapters.persistence.repository.FranchiseRepository;
 import com.pragma.challenge.franchises.infrastructure.adapters.persistence.repository.ProductRepository;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.dto.DefaultServerResponse;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,11 +47,13 @@ class ProductRouterRestITTest {
 
   private String branchUuid;
   private String productUuid;
+  private String franchiseUuid;
 
   @BeforeEach
   void setUp() {
     var franchiseSaved = franchiseRepository.save(getFranchiseEntity()).block();
     assert franchiseSaved != null;
+    franchiseUuid = franchiseSaved.getUuid();
     var branchSaved =
         branchRepository.save(getBranchEntityFixedName(franchiseSaved.getId())).block();
     assert branchSaved != null;
@@ -233,6 +238,48 @@ class ProductRouterRestITTest {
               assertNotNull(error);
               assertNotNull(error.getDescription());
               assertEquals(ServerResponses.PRODUCT_NOT_FOUND.getMessage(), error.getDescription());
+            });
+  }
+
+  @Test
+  void getTopProducts() {
+    webTestClient
+        .get()
+        .uri(String.format("%s%s/%s", PRODUCT_BASE_PATH, TOP_PRODUCT_BASE_PATH, franchiseUuid))
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(
+            new ParameterizedTypeReference<
+                DefaultServerResponse<List<TopProduct>, StandardError>>() {})
+        .consumeWith(
+            exchangeResult -> {
+              var response = exchangeResult.getResponseBody();
+              assertNotNull(response);
+              var test = response.data();
+              assertNotNull(test);
+            });
+  }
+
+  @Test
+  void getTopProductsFranchiseNotFound() {
+    webTestClient
+        .get()
+        .uri(String.format("%s%s/%s", PRODUCT_BASE_PATH, TOP_PRODUCT_BASE_PATH, "1"))
+        .exchange()
+        .expectStatus()
+        .isNotFound()
+        .expectBody(
+            new ParameterizedTypeReference<DefaultServerResponse<Object, StandardError>>() {})
+        .consumeWith(
+            exchangeResult -> {
+              var response = exchangeResult.getResponseBody();
+              assertNotNull(response);
+              var error = response.error();
+              assertNotNull(error);
+              assertNotNull(error.getDescription());
+              assertEquals(
+                  ServerResponses.FRANCHISE_NOT_FOUND.getMessage(), error.getDescription());
             });
   }
 }

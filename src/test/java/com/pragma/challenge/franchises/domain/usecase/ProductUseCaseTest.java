@@ -3,6 +3,7 @@ package com.pragma.challenge.franchises.domain.usecase;
 import static com.pragma.challenge.franchises.util.ProductDataUtil.getInvalidProduct;
 import static com.pragma.challenge.franchises.util.ProductDataUtil.getProduct;
 import static com.pragma.challenge.franchises.util.ProductDataUtil.getProductWithUuid;
+import static com.pragma.challenge.franchises.util.TopProductDataUtil.getTopProducts;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -10,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BadRequest;
@@ -18,6 +20,7 @@ import com.pragma.challenge.franchises.domain.exceptions.standard_exception.Prod
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.ProductNotFound;
 import com.pragma.challenge.franchises.domain.model.Product;
 import com.pragma.challenge.franchises.domain.spi.BranchPersistencePort;
+import com.pragma.challenge.franchises.domain.spi.FranchisePersistencePort;
 import com.pragma.challenge.franchises.domain.spi.ProductPersistencePort;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -25,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -35,6 +39,7 @@ class ProductUseCaseTest {
 
   @Mock ProductPersistencePort productPersistencePort;
   @Mock BranchPersistencePort branchPersistencePort;
+  @Mock FranchisePersistencePort franchisePersistencePort;
 
   @Test
   void createValidProduct() {
@@ -191,5 +196,36 @@ class ProductUseCaseTest {
     verify(productPersistencePort).productExistsByUuid(product.uuid());
     verify(productPersistencePort, never()).updateProduct(any(), anyInt(), anyString());
     verify(productPersistencePort).checkNewProductNameUnique(anyString(), anyString());
+  }
+
+  @Test
+  void getProductsWithMoreStockByFranchiseUuidSuccess() {
+    var uuid = UUID.randomUUID().toString();
+    var topProducts = getTopProducts();
+
+    when(franchisePersistencePort.franchiseExistsByUuid(anyString())).thenReturn(Mono.just(true));
+    when(productPersistencePort.getProductsWithMoreStockByFranchiseUuid(anyString()))
+        .thenReturn(Flux.fromIterable(topProducts));
+
+    StepVerifier.create(productUseCase.getProductsWithMoreStockByFranchiseUuid(uuid))
+        .expectNextSequence(topProducts)
+        .verifyComplete();
+
+    verify(franchisePersistencePort).franchiseExistsByUuid(anyString());
+    verify(productPersistencePort).getProductsWithMoreStockByFranchiseUuid(anyString());
+  }
+
+  @Test
+  void getProductsWithMoreStockByFranchiseUuidBadRequest() {
+    var franchiseUuid = UUID.randomUUID().toString();
+
+    when(franchisePersistencePort.franchiseExistsByUuid(anyString())).thenReturn(Mono.just(false));
+
+    StepVerifier.create(productUseCase.getProductsWithMoreStockByFranchiseUuid(franchiseUuid))
+        .expectError(BadRequest.class)
+        .verify();
+
+    verify(franchisePersistencePort).franchiseExistsByUuid(anyString());
+    verifyNoInteractions(productPersistencePort);
   }
 }

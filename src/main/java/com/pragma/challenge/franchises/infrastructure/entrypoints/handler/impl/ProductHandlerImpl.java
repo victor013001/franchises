@@ -115,4 +115,25 @@ public class ProductHandlerImpl implements ProductHandler {
         .onErrorResume(StandardException.class, standardErrorHandler(responseMapper))
         .onErrorResume(genericErrorHandler(responseMapper));
   }
+
+  @Override
+  public Mono<ServerResponse> getFranchiseTopBranchesProduct(ServerRequest request) {
+    return Mono.just(request.pathVariable(ConstantsRoute.FRANCHISE_UUID_PARAM))
+        .switchIfEmpty(Mono.error(BadRequest::new))
+        .flatMap(
+            franchiseUuid ->
+                productServicePort
+                    .getProductsWithMoreStockByFranchiseUuid(franchiseUuid)
+                    .collectList())
+        .flatMap(
+            topProducts ->
+                buildResponse(
+                    ServerResponses.TOP_PRODUCT_FOUND_SUCCESSFULLY.getHttpStatus(),
+                    topProducts,
+                    null,
+                    responseMapper))
+        .doOnError(logErrorHandler(log, LOG_PREFIX))
+        .onErrorResume(StandardException.class, standardErrorHandler(responseMapper))
+        .onErrorResume(genericErrorHandler(responseMapper));
+  }
 }

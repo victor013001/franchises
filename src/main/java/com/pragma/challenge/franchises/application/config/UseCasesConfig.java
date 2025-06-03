@@ -58,8 +58,11 @@ public class UseCasesConfig {
 
   @Bean
   public ProductServicePort productUseCase(
-      ProductPersistencePort productPersistencePort, BranchPersistencePort branchPersistencePort) {
-    return new ProductUseCase(productPersistencePort, branchPersistencePort);
+      ProductPersistencePort productPersistencePort,
+      BranchPersistencePort branchPersistencePort,
+      FranchisePersistencePort franchisePersistencePort) {
+    return new ProductUseCase(
+        productPersistencePort, branchPersistencePort, franchisePersistencePort);
   }
 
   @Bean
