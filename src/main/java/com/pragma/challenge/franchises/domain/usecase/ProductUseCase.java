@@ -3,6 +3,7 @@ package com.pragma.challenge.franchises.domain.usecase;
 import com.pragma.challenge.franchises.domain.api.ProductServicePort;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BranchNotFound;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.ProductAlreadyExists;
+import com.pragma.challenge.franchises.domain.exceptions.standard_exception.ProductNotFound;
 import com.pragma.challenge.franchises.domain.model.Product;
 import com.pragma.challenge.franchises.domain.spi.BranchPersistencePort;
 import com.pragma.challenge.franchises.domain.spi.ProductPersistencePort;
@@ -41,5 +42,14 @@ public class ProductUseCase implements ProductServicePort {
                     .flatMap(
                         franchiseId ->
                             productPersistencePort.saveProduct(validProduct, franchiseId)));
+  }
+
+  @Override
+  public Mono<Void> deleteProduct(String productUuid) {
+    return productPersistencePort
+        .productExistsByUuid(productUuid)
+        .filter(Boolean.TRUE::equals)
+        .switchIfEmpty(Mono.error(ProductNotFound::new))
+        .flatMap(productExists -> productPersistencePort.deleteByUuid(productUuid));
   }
 }

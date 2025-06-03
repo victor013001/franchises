@@ -8,4 +8,8 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface ProductRepository extends ReactiveCrudRepository<ProductEntity, Long> {
   Mono<Boolean> existsByName(String name);
+
+  Mono<Boolean> existsByUuid(String productUuid);
+
+  Mono<Void> deleteByUuid(String productUuid);
 }

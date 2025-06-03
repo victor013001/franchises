@@ -66,6 +66,16 @@ public class BranchRouterRest {
                                       implementation =
                                           SwaggerResponses.DefaultErrorResponse.class))),
                   @ApiResponse(
+                      responseCode = "404",
+                      description = ConstantsMsg.FRANCHISE_NOT_FOUND_MSG,
+                      content =
+                          @Content(
+                              mediaType = MediaType.APPLICATION_JSON_VALUE,
+                              schema =
+                                  @Schema(
+                                      implementation =
+                                          SwaggerResponses.DefaultErrorResponse.class))),
+                  @ApiResponse(
                       responseCode = "409",
                       description = ConstantsMsg.BRANCH_ALREADY_EXISTS_MSG,
                       content =

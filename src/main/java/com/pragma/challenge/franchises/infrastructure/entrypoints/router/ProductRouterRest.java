@@ -1,16 +1,21 @@
 package com.pragma.challenge.franchises.infrastructure.entrypoints.router;
 
 import static com.pragma.challenge.franchises.domain.constants.ConstantsRoute.PRODUCT_BASE_PATH;
+import static org.springframework.web.reactive.function.server.RequestPredicates.DELETE;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.path;
 import static org.springframework.web.reactive.function.server.RouterFunctions.nest;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 import com.pragma.challenge.franchises.domain.constants.ConstantsMsg;
+import com.pragma.challenge.franchises.domain.constants.ConstantsRoute;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.dto.ProductDto;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.handler.ProductHandler;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.util.SwaggerResponses;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -66,8 +71,82 @@ public class ProductRouterRest {
                                       implementation =
                                           SwaggerResponses.DefaultErrorResponse.class))),
                   @ApiResponse(
+                      responseCode = "404",
+                      description = ConstantsMsg.BRANCH_NOT_FOUND_MSG,
+                      content =
+                          @Content(
+                              mediaType = MediaType.APPLICATION_JSON_VALUE,
+                              schema =
+                                  @Schema(
+                                      implementation =
+                                          SwaggerResponses.DefaultErrorResponse.class))),
+                  @ApiResponse(
                       responseCode = "409",
                       description = ConstantsMsg.PRODUCT_ALREADY_EXISTS_MSG,
+                      content =
+                          @Content(
+                              mediaType = MediaType.APPLICATION_JSON_VALUE,
+                              schema =
+                                  @Schema(
+                                      implementation =
+                                          SwaggerResponses.DefaultErrorResponse.class))),
+                  @ApiResponse(
+                      responseCode = "500",
+                      description = ConstantsMsg.SERVER_ERROR_MSG,
+                      content =
+                          @Content(
+                              mediaType = MediaType.APPLICATION_JSON_VALUE,
+                              schema =
+                                  @Schema(
+                                      implementation =
+                                          SwaggerResponses.DefaultErrorResponse.class)))
+                })),
+    @RouterOperation(
+        path = PRODUCT_BASE_PATH,
+        method = RequestMethod.DELETE,
+        beanClass = ProductHandler.class,
+        beanMethod = "deleteProduct",
+        operation =
+            @Operation(
+                operationId = "deleteProduct",
+                summary = "Delete Product by uuid",
+                parameters = {
+                  @Parameter(
+                      in = ParameterIn.QUERY,
+                      name = ConstantsRoute.PRODUCT_UUID_PARAM,
+                      description = "Product uuid to delete",
+                      required = true,
+                      array =
+                          @ArraySchema(
+                              schema =
+                                  @Schema(
+                                      type = "string",
+                                      example = "75f2f1e6-f280-4654-a833-460d00f38d29")))
+                },
+                responses = {
+                  @ApiResponse(
+                      responseCode = "200",
+                      description = ConstantsMsg.PRODUCT_DELETED_SUCCESSFULLY_MSG,
+                      content =
+                          @Content(
+                              mediaType = MediaType.APPLICATION_JSON_VALUE,
+                              schema =
+                                  @Schema(
+                                      implementation =
+                                          SwaggerResponses.DefaultMessageResponse.class))),
+                  @ApiResponse(
+                      responseCode = "400",
+                      description = ConstantsMsg.BAD_REQUEST_MSG,
+                      content =
+                          @Content(
+                              mediaType = MediaType.APPLICATION_JSON_VALUE,
+                              schema =
+                                  @Schema(
+                                      implementation =
+                                          SwaggerResponses.DefaultErrorResponse.class))),
+                  @ApiResponse(
+                      responseCode = "404",
+                      description = ConstantsMsg.PRODUCT_NOT_FOUND_MSG,
                       content =
                           @Content(
                               mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -88,6 +167,11 @@ public class ProductRouterRest {
                 }))
   })
   public RouterFunction<ServerResponse> productRouterFunction(ProductHandler productHandler) {
-    return nest(path(PRODUCT_BASE_PATH), route(POST(""), productHandler::createProduct));
+    return nest(
+        path(PRODUCT_BASE_PATH),
+        route(POST(""), productHandler::createProduct)
+            .andRoute(
+                DELETE(String.format("/{%s}", ConstantsRoute.PRODUCT_UUID_PARAM)),
+                productHandler::deleteProduct));
   }
 }

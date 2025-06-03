@@ -20,4 +20,20 @@ public interface ProductPersistencePort {
    * @return Publisher that emits flag if the product name already exists
    */
   Mono<Boolean> productExistsByName(String name);
+
+  /**
+   * Check if the product exists by uuid
+   *
+   * @param productUuid product uuid
+   * @return Publisher that emits flag if the product exists
+   */
+  Mono<Boolean> productExistsByUuid(String productUuid);
+
+  /**
+   * Delete a product by uuid
+   *
+   * @param productUuid product uuid
+   * @return Void Publisher
+   */
+  Mono<Void> deleteByUuid(String productUuid);
 }
