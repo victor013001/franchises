@@ -52,4 +52,25 @@ public class ProductUseCase implements ProductServicePort {
         .switchIfEmpty(Mono.error(ProductNotFound::new))
         .flatMap(productExists -> productPersistencePort.deleteByUuid(productUuid));
   }
+
+  @Override
+  public Mono<Void> updateProduct(Product product) {
+
+    return Mono.fromCallable(
+            () -> {
+              ValidNotBlank.valid(product);
+              ValidIntRange.valid(product);
+              return product;
+            })
+        .flatMap(
+            validProduct ->
+                productPersistencePort
+                    .productExistsByUuid(product.uuid())
+                    .filter(Boolean.TRUE::equals)
+                    .switchIfEmpty(Mono.error(ProductNotFound::new))
+                    .flatMap(
+                        productExists ->
+                            productPersistencePort.updateProduct(
+                                product.uuid(), product.stock(), product.name())));
+  }
 }

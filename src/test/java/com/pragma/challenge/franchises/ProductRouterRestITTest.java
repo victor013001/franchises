@@ -7,6 +7,8 @@ import static com.pragma.challenge.franchises.util.ProductDtoDataUtil.getBadProd
 import static com.pragma.challenge.franchises.util.ProductDtoDataUtil.getProductDto;
 import static com.pragma.challenge.franchises.util.ProductDtoDataUtil.getProductDtoFixedName;
 import static com.pragma.challenge.franchises.util.ProductEntityDataUtil.getProductEntityFixedName;
+import static com.pragma.challenge.franchises.util.ProductUpdateDtoDataUtil.getBadProductUpdateDto;
+import static com.pragma.challenge.franchises.util.ProductUpdateDtoDataUtil.getProductUpdateDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -156,6 +158,71 @@ class ProductRouterRestITTest {
         .exchange()
         .expectStatus()
         .is4xxClientError()
+        .expectBody(
+            new ParameterizedTypeReference<DefaultServerResponse<Object, StandardError>>() {})
+        .consumeWith(
+            exchangeResult -> {
+              var response = exchangeResult.getResponseBody();
+              assertNotNull(response);
+              var error = response.error();
+              assertNotNull(error);
+              assertNotNull(error.getDescription());
+              assertEquals(ServerResponses.PRODUCT_NOT_FOUND.getMessage(), error.getDescription());
+            });
+  }
+
+  @Test
+  void updateProduct() {
+    webTestClient
+        .patch()
+        .uri(String.format("%s/%s", PRODUCT_BASE_PATH, productUuid))
+        .bodyValue(getProductUpdateDto())
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(
+            new ParameterizedTypeReference<DefaultServerResponse<String, StandardError>>() {})
+        .consumeWith(
+            exchangeResult -> {
+              var response = exchangeResult.getResponseBody();
+              assertNotNull(response);
+              var data = response.data();
+              assertNotNull(data);
+              assertEquals(ConstantsMsg.PRODUCT_UPDATED_SUCCESSFULLY_MSG, data);
+            });
+  }
+
+  @Test
+  void updateProductBadRequest() {
+    webTestClient
+        .patch()
+        .uri(String.format("%s/%s", PRODUCT_BASE_PATH, " "))
+        .bodyValue(getBadProductUpdateDto())
+        .exchange()
+        .expectStatus()
+        .isBadRequest()
+        .expectBody(
+            new ParameterizedTypeReference<DefaultServerResponse<Object, StandardError>>() {})
+        .consumeWith(
+            exchangeResult -> {
+              var response = exchangeResult.getResponseBody();
+              assertNotNull(response);
+              var error = response.error();
+              assertNotNull(error);
+              assertNotNull(error.getDescription());
+              assertEquals(ServerResponses.BAD_REQUEST.getMessage(), error.getDescription());
+            });
+  }
+
+  @Test
+  void updateNotFoundProduct() {
+    webTestClient
+        .patch()
+        .uri(String.format("%s/%s", PRODUCT_BASE_PATH, "1"))
+        .bodyValue(getProductUpdateDto())
+        .exchange()
+        .expectStatus()
+        .isNotFound()
         .expectBody(
             new ParameterizedTypeReference<DefaultServerResponse<Object, StandardError>>() {})
         .consumeWith(

@@ -36,4 +36,14 @@ public interface ProductPersistencePort {
    * @return Void Publisher
    */
   Mono<Void> deleteByUuid(String productUuid);
+
+  /**
+   * Update the name and stock of the product uuid
+   *
+   * @param uuid product uuid
+   * @param stock product stock
+   * @param name product name
+   * @return Void Publisher
+   */
+  Mono<Void> updateProduct(String uuid, Integer stock, String name);
 }

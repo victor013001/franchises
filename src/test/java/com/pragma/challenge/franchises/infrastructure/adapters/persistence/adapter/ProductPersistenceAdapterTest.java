@@ -83,4 +83,18 @@ class ProductPersistenceAdapterTest {
 
     verify(productRepository).deleteByUuid(uuid);
   }
+
+  @Test
+  void updateProduct() {
+    var uuid = "683f017d-2780-8004-b45c-278ac08f8757";
+    var stock = 10;
+    var name = "Updated Name";
+
+    when(productRepository.updateProductByUuid(uuid, stock, name)).thenReturn(Mono.empty());
+
+    StepVerifier.create(productPersistenceAdapter.updateProduct(uuid, stock, name))
+        .verifyComplete();
+
+    verify(productRepository).updateProductByUuid(uuid, stock, name);
+  }
 }
