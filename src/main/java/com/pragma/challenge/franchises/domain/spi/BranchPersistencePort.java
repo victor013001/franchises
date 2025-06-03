@@ -20,4 +20,20 @@ public interface BranchPersistencePort {
    * @return Publisher that emits flag if branch name already exists
    */
   Mono<Boolean> branchExistsByName(String name);
+
+  /**
+   * Check if branch exists by uuid
+   *
+   * @param uuid branch uuid
+   * @return Publisher that emits flag if the branch exists
+   */
+  Mono<Boolean> branchExistsByUuid(String uuid);
+
+  /**
+   * Get branch id by uuid
+   *
+   * @param uuid branch uuid
+   * @return Publisher that emits the branch id
+   */
+  Mono<Long> getBranchIdByUuid(String uuid);
 }
