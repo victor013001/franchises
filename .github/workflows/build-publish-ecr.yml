@@ -1,63 +1,81 @@
 name: Build and Push to ECR
 
-on:  
+on:
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: franchise-app
 
 jobs:
-  build-and-push:
-  
+  build:
     runs-on: ubuntu-latest
-    environment: dev
     permissions:
       contents: read
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    - name: Give execute permission to gradlew
-      run: chmod +x ./gradlew
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582
 
-    - name: Build with verify(build + jacoco coverage)
-      run: ./gradlew build
+      - name: Give execute permission to gradlew
+        run: chmod +x ./gradlew
 
-    - name: Build Docker image
-      run: |
-        IMAGE_TAG=$(date +%s)
-        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
-        docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
-        
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-    
-    - name: Log in to Amazon ECR
-      uses: aws-actions/amazon-ecr-login@v2
+      - name: Build with verify (build + jacoco coverage)
+        run: ./gradlew build
 
-    - name: Tag and push image to ECR
-      run: |
-        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-        IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
-        docker tag $ECR_REPOSITORY:$IMAGE_TAG $IMAGE_URI
-        docker push $IMAGE_URI
-        echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+      - name: Build Docker image
+        id: build_image
+        run: |
+          docker build -t $ECR_REPOSITORY:latest .
+          docker save -o /tmp/docker_image.tar $ECR_REPOSITORY:latest
 
-    - name: Output image URI
-      run: echo "Pushed image to $IMAGE_URI"
+      - name: Upload Docker image
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp/docker_image.tar
+
+  push-to-ecr:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: build
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Download Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+
+      - name: Load Docker image
+        run: docker load -i /tmp/docker_image.tar
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Tag and push image to ECR
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
+          docker tag $ECR_REPOSITORY:latest $IMAGE_URI
+          docker push $IMAGE_URI

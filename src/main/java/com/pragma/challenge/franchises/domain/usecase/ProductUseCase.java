@@ -1,6 +1,7 @@
 package com.pragma.challenge.franchises.domain.usecase;
 
 import com.pragma.challenge.franchises.domain.api.ProductServicePort;
+import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BadRequest;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BranchNotFound;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.ProductAlreadyExists;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.ProductNotFound;
@@ -51,5 +52,31 @@ public class ProductUseCase implements ProductServicePort {
         .filter(Boolean.TRUE::equals)
         .switchIfEmpty(Mono.error(ProductNotFound::new))
         .flatMap(productExists -> productPersistencePort.deleteByUuid(productUuid));
+  }
+
+  @Override
+  public Mono<Void> updateProduct(Product product) {
+    return Mono.fromCallable(
+            () -> {
+              ValidNotBlank.valid(product);
+              ValidIntRange.valid(product);
+              return product;
+            })
+        .flatMap(
+            validProduct ->
+                productPersistencePort
+                    .productExistsByUuid(product.uuid())
+                    .filter(Boolean.TRUE::equals)
+                    .switchIfEmpty(Mono.error(ProductNotFound::new))
+                    .flatMap(
+                        productExists ->
+                            productPersistencePort.checkNewProductNameUnique(
+                                product.name(), product.uuid()))
+                    .filter(result -> result == 0)
+                    .switchIfEmpty(Mono.error(BadRequest::new))
+                    .flatMap(
+                        validData ->
+                            productPersistencePort.updateProduct(
+                                product.uuid(), product.stock(), product.name())));
   }
 }

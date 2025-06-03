@@ -43,4 +43,16 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
     log.info("{} Deleting Product with uuid: {}.", LOG_PREFIX, productUuid);
     return productRepository.deleteByUuid(productUuid);
   }
+
+  @Override
+  public Mono<Void> updateProduct(String uuid, Integer stock, String name) {
+    log.info("{} Updating stock and name of Product with uuid: {}.", LOG_PREFIX, uuid);
+    return productRepository.updateProductByUuid(uuid, stock, name);
+  }
+
+  @Override
+  public Mono<Integer> checkNewProductNameUnique(String name, String uuid) {
+    log.info("{} Checking if new Product Name {} is unique.", LOG_PREFIX, name);
+    return productRepository.newNameUnique(name, uuid);
+  }
 }

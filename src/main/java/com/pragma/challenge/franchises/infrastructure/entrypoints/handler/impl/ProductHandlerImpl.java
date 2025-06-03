@@ -8,11 +8,13 @@ import com.pragma.challenge.franchises.domain.enums.ServerResponses;
 import com.pragma.challenge.franchises.domain.exceptions.StandardException;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BadRequest;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.dto.ProductDto;
+import com.pragma.challenge.franchises.infrastructure.entrypoints.dto.ProductUpdateDto;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.handler.ProductHandler;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.mapper.ProductMapper;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.mapper.ServerResponseMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -75,6 +77,38 @@ public class ProductHandlerImpl implements ProductHandler {
             buildResponse(
                 ServerResponses.PRODUCT_DELETED_SUCCESSFULLY.getHttpStatus(),
                 ServerResponses.PRODUCT_DELETED_SUCCESSFULLY.getMessage(),
+                null,
+                responseMapper))
+        .doOnError(logErrorHandler(log, LOG_PREFIX))
+        .onErrorResume(StandardException.class, standardErrorHandler(responseMapper))
+        .onErrorResume(genericErrorHandler(responseMapper));
+  }
+
+  @Override
+  public Mono<ServerResponse> updateProduct(ServerRequest request) {
+    Mono<String> uuidMono =
+        Mono.just(request.pathVariable(ConstantsRoute.PRODUCT_UUID_PARAM))
+            .filter(Strings::isNotBlank);
+
+    Mono<ProductUpdateDto> dtoMono = request.bodyToMono(ProductUpdateDto.class);
+
+    return Mono.zip(uuidMono, dtoMono)
+        .switchIfEmpty(Mono.error(BadRequest::new))
+        .flatMap(
+            tuple -> {
+              String productUuid = tuple.getT1();
+              ProductUpdateDto productUpdateDto = tuple.getT2();
+              log.info("{} Updating Product with uuid: {}", LOG_PREFIX, productUuid);
+              return productServicePort
+                  .updateProduct(productMapper.toModel(productUpdateDto, productUuid))
+                  .doOnSuccess(
+                      product ->
+                          log.info("{} Product with uuid: {} updated.", LOG_PREFIX, productUuid));
+            })
+        .then(
+            buildResponse(
+                ServerResponses.PRODUCT_UPDATED_SUCCESSFULLY.getHttpStatus(),
+                ServerResponses.PRODUCT_UPDATED_SUCCESSFULLY.getMessage(),
                 null,
                 responseMapper))
         .doOnError(logErrorHandler(log, LOG_PREFIX))

@@ -24,4 +24,6 @@ public class ConstantsMsg {
   public static final String PRODUCT_DELETED_SUCCESSFULLY_MSG =
       "The product was deleted successfully.";
   public static final String PRODUCT_NOT_FOUND_MSG = "The product provided was not found.";
+  public static final String PRODUCT_UPDATED_SUCCESSFULLY_MSG =
+      "The product was updated successfully.";
 }

@@ -19,4 +19,12 @@ public interface ProductServicePort {
    * @return Void Publisher
    */
   Mono<Void> deleteProduct(String productUuid);
+
+  /**
+   * Update a product by uuid
+   *
+   * @param product The product to update
+   * @return Void Publisher
+   */
+  Mono<Void> updateProduct(Product product);
 }

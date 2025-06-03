@@ -17,4 +17,10 @@ public class ProductDataUtil {
   public static Product getInvalidProduct() {
     return new Product(null, null, null, null);
   }
+
+  public static Product getProductWithUuid() {
+    var randomId = ThreadLocalRandom.current().nextLong();
+    return new Product(
+        UUID.randomUUID().toString(), "Product" + randomId, 100, UUID.randomUUID().toString());
+  }
 }
