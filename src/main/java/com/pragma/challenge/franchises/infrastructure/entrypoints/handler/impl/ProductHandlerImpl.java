@@ -11,7 +11,6 @@ import com.pragma.challenge.franchises.infrastructure.entrypoints.dto.ProductDto
 import com.pragma.challenge.franchises.infrastructure.entrypoints.handler.ProductHandler;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.mapper.ProductMapper;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.mapper.ServerResponseMapper;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -61,8 +60,7 @@ public class ProductHandlerImpl implements ProductHandler {
 
   @Override
   public Mono<ServerResponse> deleteProduct(ServerRequest request) {
-    return Mono.just(request.queryParam(ConstantsRoute.PRODUCT_UUID_PARAM))
-        .map(Optional::get)
+    return Mono.just(request.pathVariable(ConstantsRoute.PRODUCT_UUID_PARAM))
         .switchIfEmpty(Mono.error(BadRequest::new))
         .flatMap(
             productUuid -> {
@@ -73,13 +71,12 @@ public class ProductHandlerImpl implements ProductHandler {
                       product ->
                           log.info("{} Product with uuid: {} deleted.", LOG_PREFIX, productUuid));
             })
-        .flatMap(
-            ignore ->
-                buildResponse(
-                    ServerResponses.PRODUCT_DELETED_SUCCESSFULLY.getHttpStatus(),
-                    ServerResponses.PRODUCT_DELETED_SUCCESSFULLY.getMessage(),
-                    null,
-                    responseMapper))
+        .then(
+            buildResponse(
+                ServerResponses.PRODUCT_DELETED_SUCCESSFULLY.getHttpStatus(),
+                ServerResponses.PRODUCT_DELETED_SUCCESSFULLY.getMessage(),
+                null,
+                responseMapper))
         .doOnError(logErrorHandler(log, LOG_PREFIX))
         .onErrorResume(StandardException.class, standardErrorHandler(responseMapper))
         .onErrorResume(genericErrorHandler(responseMapper));

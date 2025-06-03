@@ -15,7 +15,6 @@ import com.pragma.challenge.franchises.infrastructure.entrypoints.util.SwaggerRe
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -112,16 +111,9 @@ public class ProductRouterRest {
                 summary = "Delete Product by uuid",
                 parameters = {
                   @Parameter(
-                      in = ParameterIn.QUERY,
+                      in = ParameterIn.PATH,
                       name = ConstantsRoute.PRODUCT_UUID_PARAM,
-                      description = "Product uuid to delete",
-                      required = true,
-                      array =
-                          @ArraySchema(
-                              schema =
-                                  @Schema(
-                                      type = "string",
-                                      example = "75f2f1e6-f280-4654-a833-460d00f38d29")))
+                      description = "Product uuid to delete")
                 },
                 responses = {
                   @ApiResponse(
