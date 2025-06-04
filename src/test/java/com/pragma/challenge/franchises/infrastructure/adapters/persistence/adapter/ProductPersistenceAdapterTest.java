@@ -1,6 +1,7 @@
 package com.pragma.challenge.franchises.infrastructure.adapters.persistence.adapter;
 
 import static com.pragma.challenge.franchises.util.ProductDataUtil.getProduct;
+import static com.pragma.challenge.franchises.util.TopProductProjectionDataUtil.getTopProductsProjection;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -10,12 +11,14 @@ import com.pragma.challenge.franchises.infrastructure.adapters.persistence.entit
 import com.pragma.challenge.franchises.infrastructure.adapters.persistence.mapper.ProductEntityMapper;
 import com.pragma.challenge.franchises.infrastructure.adapters.persistence.mapper.ProductEntityMapperImpl;
 import com.pragma.challenge.franchises.infrastructure.adapters.persistence.repository.ProductRepository;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -96,5 +99,20 @@ class ProductPersistenceAdapterTest {
         .verifyComplete();
 
     verify(productRepository).updateProductByUuid(uuid, stock, name);
+  }
+
+  @Test
+  void getProductsWithMoreStockByFranchiseUuid() {
+    var franchiseUuid = UUID.randomUUID().toString();
+    var topProductProjections = getTopProductsProjection();
+    when(productRepository.findTopStockProductsByFranchise(anyString()))
+        .thenReturn(Flux.fromIterable(topProductProjections));
+
+    StepVerifier.create(
+            productPersistenceAdapter.getProductsWithMoreStockByFranchiseUuid(franchiseUuid))
+        .expectNextCount(2)
+        .verifyComplete();
+
+    verify(productRepository).findTopStockProductsByFranchise(franchiseUuid);
   }
 }

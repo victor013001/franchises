@@ -11,4 +11,12 @@ public interface BranchServicePort {
    * @return Publisher that emits the created Branch
    */
   Mono<Branch> addToFranchise(Branch branch);
+
+  /**
+   * Update a branch by uuid
+   *
+   * @param branch The branch to update
+   * @return Void Publisher
+   */
+  Mono<Void> updateBranch(Branch branch);
 }

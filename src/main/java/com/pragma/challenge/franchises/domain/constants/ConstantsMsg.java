@@ -26,4 +26,10 @@ public class ConstantsMsg {
   public static final String PRODUCT_NOT_FOUND_MSG = "The product provided was not found.";
   public static final String PRODUCT_UPDATED_SUCCESSFULLY_MSG =
       "The product was updated successfully.";
+  public static final String TOP_PRODUCT_FOUND_SUCCESSFULLY_MSG =
+      "The branches top product by franchise were found successfully.";
+  public static final String BRANCH_UPDATED_SUCCESSFULLY_MSG =
+      "The branch was updated successfully.";
+  public static final String FRANCHISE_UPDATED_SUCCESSFULLY_MSG =
+      "The franchise was updated successfully.";
 }

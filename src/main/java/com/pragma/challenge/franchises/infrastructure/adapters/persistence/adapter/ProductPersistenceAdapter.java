@@ -1,11 +1,13 @@
 package com.pragma.challenge.franchises.infrastructure.adapters.persistence.adapter;
 
 import com.pragma.challenge.franchises.domain.model.Product;
+import com.pragma.challenge.franchises.domain.model.TopProduct;
 import com.pragma.challenge.franchises.domain.spi.ProductPersistencePort;
 import com.pragma.challenge.franchises.infrastructure.adapters.persistence.mapper.ProductEntityMapper;
 import com.pragma.challenge.franchises.infrastructure.adapters.persistence.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -54,5 +56,13 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
   public Mono<Integer> checkNewProductNameUnique(String name, String uuid) {
     log.info("{} Checking if new Product Name {} is unique.", LOG_PREFIX, name);
     return productRepository.newNameUnique(name, uuid);
+  }
+
+  @Override
+  public Flux<TopProduct> getProductsWithMoreStockByFranchiseUuid(String franchiseUuid) {
+    log.info("{} Getting branches top product by franchise uuid: {}.", LOG_PREFIX, franchiseUuid);
+    return productRepository
+        .findTopStockProductsByFranchise(franchiseUuid)
+        .map(productEntityMapper::toTopProduct);
   }
 }
