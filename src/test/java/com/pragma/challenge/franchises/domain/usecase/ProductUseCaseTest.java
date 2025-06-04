@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BadRequest;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BranchNotFound;
+import com.pragma.challenge.franchises.domain.exceptions.standard_exception.FranchiseNotFound;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.ProductAlreadyExists;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.ProductNotFound;
 import com.pragma.challenge.franchises.domain.model.Product;
@@ -222,7 +223,7 @@ class ProductUseCaseTest {
     when(franchisePersistencePort.franchiseExistsByUuid(anyString())).thenReturn(Mono.just(false));
 
     StepVerifier.create(productUseCase.getProductsWithMoreStockByFranchiseUuid(franchiseUuid))
-        .expectError(BadRequest.class)
+        .expectError(FranchiseNotFound.class)
         .verify();
 
     verify(franchisePersistencePort).franchiseExistsByUuid(anyString());
