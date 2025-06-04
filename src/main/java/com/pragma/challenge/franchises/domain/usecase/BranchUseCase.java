@@ -2,6 +2,7 @@ package com.pragma.challenge.franchises.domain.usecase;
 
 import com.pragma.challenge.franchises.domain.api.BranchServicePort;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BranchAlreadyExists;
+import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BranchNotFound;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.FranchiseNotFound;
 import com.pragma.challenge.franchises.domain.model.Branch;
 import com.pragma.challenge.franchises.domain.spi.BranchPersistencePort;
@@ -39,5 +40,29 @@ public class BranchUseCase implements BranchServicePort {
                             franchisePersistencePort.getFranchiseIdByUuid(branch.franchiseUuid()))
                     .flatMap(
                         franchiseId -> branchPersistencePort.saveBranch(validBranch, franchiseId)));
+  }
+
+  @Override
+  public Mono<Void> updateBranch(Branch branch) {
+    return Mono.fromCallable(
+            () -> {
+              ValidNotBlank.valid(branch);
+              return branch;
+            })
+        .flatMap(
+            validBranch ->
+                branchPersistencePort
+                    .branchExistsByUuid(validBranch.uuid())
+                    .filter(Boolean.TRUE::equals)
+                    .switchIfEmpty(Mono.error(BranchNotFound::new))
+                    .flatMap(
+                        branchExists ->
+                            branchPersistencePort.checkNewBranchNameUnique(
+                                branch.name(), branch.uuid()))
+                    .filter(result -> result == 0)
+                    .switchIfEmpty(Mono.error(BranchAlreadyExists::new))
+                    .flatMap(
+                        validData ->
+                            branchPersistencePort.updateBranch(branch.uuid(), branch.name())));
   }
 }

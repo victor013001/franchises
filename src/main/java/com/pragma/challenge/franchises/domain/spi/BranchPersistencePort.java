@@ -36,4 +36,22 @@ public interface BranchPersistencePort {
    * @return Publisher that emits the branch id
    */
   Mono<Long> getBranchIdByUuid(String uuid);
+
+  /**
+   * Check if the new branch name is unique
+   *
+   * @param name new branch name
+   * @param uuid branch uuid
+   * @return Publisher that emits flag if the branch exists
+   */
+  Mono<Integer> checkNewBranchNameUnique(String name, String uuid);
+
+  /**
+   * Update the name of the branch uuid
+   *
+   * @param uuid branch uuid
+   * @param name branch name
+   * @return Void Publisher
+   */
+  Mono<Void> updateBranch(String uuid, String name);
 }

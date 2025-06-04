@@ -35,4 +35,22 @@ public interface FranchisePersistencePort {
    * @return Publisher that emits the franchise id
    */
   Mono<Long> getFranchiseIdByUuid(String uuid);
+
+  /**
+   * Check if the new franchise name is unique
+   *
+   * @param name new franchise name
+   * @param uuid franchise uuid
+   * @return Publisher that emits flag if the franchise exists
+   */
+  Mono<Integer> checkNewFranchiseNameUnique(String name, String uuid);
+
+  /**
+   * Update the name of the franchise uuid
+   *
+   * @param uuid franchise uuid
+   * @param name franchise name
+   * @return Void Publisher
+   */
+  Mono<Void> updateFranchise(String uuid, String name);
 }

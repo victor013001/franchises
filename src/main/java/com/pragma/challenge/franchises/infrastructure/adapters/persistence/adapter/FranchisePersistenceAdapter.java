@@ -43,4 +43,16 @@ public class FranchisePersistenceAdapter implements FranchisePersistencePort {
     log.info("{} Getting Franchise id by uuid: {}.", LOG_PREFIX, uuid);
     return franchiseRepository.getIdByUuid(uuid);
   }
+
+  @Override
+  public Mono<Integer> checkNewFranchiseNameUnique(String name, String uuid) {
+    log.info("{} Checking if new Franchise Name {} is unique.", LOG_PREFIX, name);
+    return franchiseRepository.newNameUnique(name, uuid);
+  }
+
+  @Override
+  public Mono<Void> updateFranchise(String uuid, String name) {
+    log.info("{} Updating name of Franchise with uuid: {}.", LOG_PREFIX, uuid);
+    return franchiseRepository.updateFranchiseByUuid(uuid, name);
+  }
 }
