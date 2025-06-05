@@ -5,23 +5,11 @@ and deployed on AWS.
 
 ## Technologies
 
-- Java
-- Spring Boot
-- Spring WebFlux
-- Gradle
-- Swagger
-- Spring Data R2DBC
-- Project Reactor
-- JUnit
-- Pitest
-- Mockito
-- Test Containers
-- Jacoco
-- Flyway
-- MySQL
-- AWS (ECR, ECS, ALB, API Gateway, Cloudwatch, RDS, IAM, Secret Manager)
-- Docker
-- Terraform
+| Core & Frameworks                 | DevOps & Cloud                                                         | Build, API, Dev Tools & Testing     | Data Stack        |
+|:----------------------------------|:-----------------------------------------------------------------------|:------------------------------------|:------------------|
+| Java, Spring Boot, Spring WebFlux | Terraform, Docker                                                      | Gradle, Swagger (SpringDoc), Lombok | MySQL             |
+| Project Reactor, Spring AOP       | GitHub Actions                                                         | MapStruct, JUnit, Mockito           | Spring Data R2DBC |
+| Spring Boot Actuator              | AWS (ECR, ECS, ALB, API Gateway, Cloudwatch, RDS, IAM, Secret Manager) | Pitest, Test Containers, Jacoco     | Flyway            |
 
 ## Features
 
