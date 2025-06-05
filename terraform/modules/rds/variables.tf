@@ -49,8 +49,8 @@ variable "subnet_ids" {
   type = list(string)
 }
 
-variable "security_group_ids" {
-  type = list(string)
+variable "rds_sg_id" {
+  type = string
 }
 
 variable "multi_az" {
@@ -60,5 +60,5 @@ variable "multi_az" {
 
 variable "backup_retention_period" {
   type    = number
-  default = 7
+  default = 1
 }

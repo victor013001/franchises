@@ -18,7 +18,7 @@ resource "aws_db_instance" "this" {
   password                = var.db_password
   port                    = var.port
   db_subnet_group_name    = aws_db_subnet_group.this.name
-  vpc_security_group_ids  = var.security_group_ids
+  vpc_security_group_ids = [var.rds_sg_id]
   skip_final_snapshot     = true
   publicly_accessible     = false
   storage_encrypted       = false

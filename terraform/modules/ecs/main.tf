@@ -2,16 +2,6 @@ resource "aws_ecs_cluster" "this" {
   name = "${var.app_name}-cluster"
 }
 
-resource "aws_cloudwatch_log_group" "task_logs" {
-  name = "/ecs/${var.app_name}" # El mismo nombre que esperas usar
-  retention_in_days = var.log_retention_days
-
-  tags = {
-    Name        = "${var.app_name}-ecs-task-logs"
-    Application = var.app_name
-  }
-}
-
 resource "aws_ecs_task_definition" "this" {
   family             = "${var.app_name}-task"
   cpu                = var.ecs_cpu
@@ -35,9 +25,8 @@ resource "aws_ecs_task_definition" "this" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          # Usar el nombre del grupo de logs creado explícitamente
-          "awslogs-group"         = aws_cloudwatch_log_group.task_logs.name,
-          "awslogs-region"        = var.region, # Asegúrate que esta variable esté correcta
+          "awslogs-group"         = var.ecs_log_group_name,
+          "awslogs-region"        = var.region,
           "awslogs-stream-prefix" = "ecs"
         }
       }
@@ -54,7 +43,7 @@ resource "aws_ecs_service" "this" {
 
   network_configuration {
     subnets          = var.subnet_ids
-    security_groups = [var.security_group_id]
+    security_groups = [var.ecs_tasks_sg_id]
     assign_public_ip = false
   }
 

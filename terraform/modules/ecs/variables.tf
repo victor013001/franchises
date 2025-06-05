@@ -29,7 +29,7 @@ variable "subnet_ids" {
   type = list(string)
 }
 
-variable "security_group_id" {
+variable "ecs_tasks_sg_id" {
   type = string
 }
 
@@ -61,12 +61,9 @@ variable "container_port" {
 }
 
 variable "region" {
-  type    = string
-  default = "us-east-1"
+  type = string
 }
 
-variable "log_retention_days" {
-  description = "Number of days to retain ECS task logs in CloudWatch."
-  type        = number
-  default     = 1 # Puedes ajustar este valor
+variable "ecs_log_group_name" {
+  type = string
 }

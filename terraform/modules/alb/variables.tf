@@ -10,11 +10,10 @@ variable "public_subnet_ids" {
   type = list(string)
 }
 
-variable "security_group_ids" {
-  type = list(string)
+variable "alb_sg_id" {
+  type = string
 }
 
 variable "ecs_target_port" {
-  type    = number
-  default = 8080
+  type = number
 }
