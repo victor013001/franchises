@@ -150,7 +150,7 @@ DB_PASSWORD=franchise_pass
 3. **Access the app:**
     - Available at `http://localhost:8080/franchises`
 
-### Swagger Documentation (AWS)
+### Swagger Documentation (Local)
 
 When running locally, the API documentation can be accessed via Swagger UI at:
 http://localhost:8080/franchises/swagger-ui.html
