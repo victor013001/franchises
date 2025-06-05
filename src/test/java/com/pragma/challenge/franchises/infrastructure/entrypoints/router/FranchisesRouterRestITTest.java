@@ -1,4 +1,4 @@
-package com.pragma.challenge.franchises;
+package com.pragma.challenge.franchises.infrastructure.entrypoints.router;
 
 import static com.pragma.challenge.franchises.domain.constants.ConstantsRoute.FRANCHISE_BASE_PATH;
 import static com.pragma.challenge.franchises.util.BranchUpdateDtoDataUtil.getBadBranchUpdateDto;
@@ -9,6 +9,7 @@ import static com.pragma.challenge.franchises.util.FranchiseEntityDataUtil.getFr
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.pragma.challenge.franchises.config.TestcontainersConfiguration;
 import com.pragma.challenge.franchises.domain.constants.ConstantsMsg;
 import com.pragma.challenge.franchises.domain.enums.ServerResponses;
 import com.pragma.challenge.franchises.domain.exceptions.StandardError;
