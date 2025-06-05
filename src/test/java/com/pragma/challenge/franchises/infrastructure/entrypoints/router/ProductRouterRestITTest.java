@@ -13,6 +13,7 @@ import static com.pragma.challenge.franchises.util.ProductUpdateDtoDataUtil.getP
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.pragma.challenge.franchises.application.FranchisesApplication;
 import com.pragma.challenge.franchises.config.TestcontainersConfiguration;
 import com.pragma.challenge.franchises.domain.constants.ConstantsMsg;
 import com.pragma.challenge.franchises.domain.enums.ServerResponses;
@@ -38,7 +39,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @ActiveProfiles("it")
 @AutoConfigureWebTestClient
 @Import(TestcontainersConfiguration.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    classes = FranchisesApplication.class,
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ProductRouterRestITTest {
 
   @Autowired WebTestClient webTestClient;
