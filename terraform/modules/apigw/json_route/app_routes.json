@@ -9,6 +9,7 @@
     "DELETE /api/v1/product/{productUuid}": "/api/v1/product/{productUuid}",
     "PATCH /api/v1/product/{productUuid}": "/api/v1/product/{productUuid}",
     "GET /api/v1/product/top/{franchiseUuid}": "/api/v1/product/top/{franchiseUuid}",
-    "GET /health": "/actuator/health"
+    "GET /health": "/actuator/health",
+    "GET /swagger": "/swagger-ui.html"
   }
 }
