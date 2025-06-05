@@ -22,6 +22,7 @@ and deployed on AWS.
 - Update a branch name
 - Update a product (name and/or stock)
 
+![Structure.png](Structure.png)
 ---
 
 ## Continuous Integration (CI)
@@ -59,6 +60,8 @@ This project uses **GitHub Actions** to automate builds and Docker image managem
 
 This workflow ensures that every proposed change to the main branch is automatically built, tested, and the resulting
 Docker image is pushed to ECR, ready for deployment in Terraform.
+
+![Actions.png](Actions.png)
 
 ---
 
@@ -102,6 +105,8 @@ And will output the API Gateway URL and the paths for the features.
   terraform plan -out=tfplan
   terraform apply tfplan
   ```
+
+![Terraform.png](Terraform.png)
 
 ### Swagger Documentation (AWS)
 
@@ -150,7 +155,7 @@ DB_PASSWORD=franchise_pass
 3. **Access the app:**
     - Available at `http://localhost:8080/franchises`
 
-### Swagger Documentation (Local)
+### Swagger Documentation (AWS)
 
 When running locally, the API documentation can be accessed via Swagger UI at:
 http://localhost:8080/franchises/swagger-ui.html

@@ -1,21 +1,25 @@
-package com.pragma.challenge.franchises;
+package com.pragma.challenge.franchises.infrastructure.entrypoints.router;
 
-import static com.pragma.challenge.franchises.domain.constants.ConstantsRoute.FRANCHISE_BASE_PATH;
+import static com.pragma.challenge.franchises.domain.constants.ConstantsRoute.BRANCH_BASE_PATH;
+import static com.pragma.challenge.franchises.util.BranchDtoDataUtil.getBadBranchDto;
+import static com.pragma.challenge.franchises.util.BranchDtoDataUtil.getBranchDto;
+import static com.pragma.challenge.franchises.util.BranchDtoDataUtil.getBranchDtoFixedName;
+import static com.pragma.challenge.franchises.util.BranchEntityDataUtil.getBranchEntityFixedName;
 import static com.pragma.challenge.franchises.util.BranchUpdateDtoDataUtil.getBadBranchUpdateDto;
 import static com.pragma.challenge.franchises.util.BranchUpdateDtoDataUtil.getBranchUpdateDto;
-import static com.pragma.challenge.franchises.util.FranchiseDtoDataUtil.*;
 import static com.pragma.challenge.franchises.util.FranchiseEntityDataUtil.getFranchiseEntity;
-import static com.pragma.challenge.franchises.util.FranchiseEntityDataUtil.getFranchiseEntityFixedName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.pragma.challenge.franchises.application.FranchisesApplication;
+import com.pragma.challenge.franchises.config.TestcontainersConfiguration;
 import com.pragma.challenge.franchises.domain.constants.ConstantsMsg;
 import com.pragma.challenge.franchises.domain.enums.ServerResponses;
 import com.pragma.challenge.franchises.domain.exceptions.StandardError;
-import com.pragma.challenge.franchises.domain.model.Franchise;
+import com.pragma.challenge.franchises.domain.model.Branch;
+import com.pragma.challenge.franchises.infrastructure.adapters.persistence.repository.BranchRepository;
 import com.pragma.challenge.franchises.infrastructure.adapters.persistence.repository.FranchiseRepository;
 import com.pragma.challenge.franchises.infrastructure.entrypoints.dto.DefaultServerResponse;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,40 +34,44 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @ActiveProfiles("it")
 @AutoConfigureWebTestClient
 @Import(TestcontainersConfiguration.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class FranchisesRouterRestITTest {
+@SpringBootTest(
+    classes = FranchisesApplication.class,
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class BranchRouterRestITTest {
 
   @Autowired WebTestClient webTestClient;
+  @Autowired BranchRepository branchRepository;
   @Autowired FranchiseRepository franchiseRepository;
 
   private String franchiseUuid;
+  private String branchUuid;
 
   @BeforeEach
   void setUp() {
-    var saved =
-        franchiseRepository
-            .saveAll(List.of(getFranchiseEntity(), getFranchiseEntityFixedName()))
-            .blockLast();
+    var saved = franchiseRepository.save(getFranchiseEntity()).block();
     assert saved != null;
     franchiseUuid = saved.getUuid();
+    var savedBranch = branchRepository.save(getBranchEntityFixedName(saved.getId())).block();
+    assert savedBranch != null;
+    branchUuid = savedBranch.getUuid();
   }
 
   @AfterEach
   void cleanDatabase() {
-    franchiseRepository.deleteAll().block();
+    branchRepository.deleteAll().then(franchiseRepository.deleteAll()).block();
   }
 
   @Test
-  void createFranchise() {
+  void addBranchToFranchise() {
     webTestClient
         .post()
-        .uri(FRANCHISE_BASE_PATH)
-        .bodyValue(getFranchiseDto())
+        .uri(BRANCH_BASE_PATH)
+        .bodyValue(getBranchDto(franchiseUuid))
         .exchange()
         .expectStatus()
         .isCreated()
         .expectBody(
-            new ParameterizedTypeReference<DefaultServerResponse<Franchise, StandardError>>() {})
+            new ParameterizedTypeReference<DefaultServerResponse<Branch, StandardError>>() {})
         .consumeWith(
             exchangeResult -> {
               var response = exchangeResult.getResponseBody();
@@ -75,11 +83,11 @@ class FranchisesRouterRestITTest {
   }
 
   @Test
-  void createFranchiseBadRequest() {
+  void addBranchBadRequest() {
     webTestClient
         .post()
-        .uri(FRANCHISE_BASE_PATH)
-        .bodyValue(getBadFranchiseDto())
+        .uri(BRANCH_BASE_PATH)
+        .bodyValue(getBadBranchDto())
         .exchange()
         .expectStatus()
         .isBadRequest()
@@ -97,11 +105,11 @@ class FranchisesRouterRestITTest {
   }
 
   @Test
-  void createFranchiseNameAlreadyExists() {
+  void addBranchNameAlreadyExists() {
     webTestClient
         .post()
-        .uri(FRANCHISE_BASE_PATH)
-        .bodyValue(getFranchiseDtoFixedName())
+        .uri(BRANCH_BASE_PATH)
+        .bodyValue(getBranchDtoFixedName(franchiseUuid))
         .exchange()
         .expectStatus()
         .is4xxClientError()
@@ -115,15 +123,15 @@ class FranchisesRouterRestITTest {
               assertNotNull(error);
               assertNotNull(error.getDescription());
               assertEquals(
-                  ServerResponses.FRANCHISE_ALREADY_EXISTS.getMessage(), error.getDescription());
+                  ServerResponses.BRANCH_ALREADY_EXISTS.getMessage(), error.getDescription());
             });
   }
 
   @Test
-  void updateFranchise() {
+  void updateBranch() {
     webTestClient
         .patch()
-        .uri(String.format("%s/%s", FRANCHISE_BASE_PATH, franchiseUuid))
+        .uri(String.format("%s/%s", BRANCH_BASE_PATH, branchUuid))
         .bodyValue(getBranchUpdateDto())
         .exchange()
         .expectStatus()
@@ -136,15 +144,15 @@ class FranchisesRouterRestITTest {
               assertNotNull(response);
               var data = response.data();
               assertNotNull(data);
-              assertEquals(ConstantsMsg.FRANCHISE_UPDATED_SUCCESSFULLY_MSG, data);
+              assertEquals(ConstantsMsg.BRANCH_UPDATED_SUCCESSFULLY_MSG, data);
             });
   }
 
   @Test
-  void updateFranchiseBadRequest() {
+  void updateBranchBadRequest() {
     webTestClient
         .patch()
-        .uri(String.format("%s/%s", FRANCHISE_BASE_PATH, " "))
+        .uri(String.format("%s/%s", BRANCH_BASE_PATH, " "))
         .bodyValue(getBadBranchUpdateDto())
         .exchange()
         .expectStatus()
@@ -163,10 +171,10 @@ class FranchisesRouterRestITTest {
   }
 
   @Test
-  void updateNotFoundFranchise() {
+  void updateNotFoundBranch() {
     webTestClient
         .patch()
-        .uri(String.format("%s/%s", FRANCHISE_BASE_PATH, "1"))
+        .uri(String.format("%s/%s", BRANCH_BASE_PATH, "1"))
         .bodyValue(getBranchUpdateDto())
         .exchange()
         .expectStatus()
@@ -180,8 +188,7 @@ class FranchisesRouterRestITTest {
               var error = response.error();
               assertNotNull(error);
               assertNotNull(error.getDescription());
-              assertEquals(
-                  ServerResponses.FRANCHISE_NOT_FOUND.getMessage(), error.getDescription());
+              assertEquals(ServerResponses.BRANCH_NOT_FOUND.getMessage(), error.getDescription());
             });
   }
 }
