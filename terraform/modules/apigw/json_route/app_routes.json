@@ -1,0 +1,14 @@
+{
+  "app_base_path_on_alb": "/franchises",
+  "api_gateway_to_app_paths": {
+    "POST /api/v1/franchise": "/api/v1/franchise",
+    "PATCH /api/v1/franchise/{franchiseUuid}": "/api/v1/franchise/{franchiseUuid}",
+    "POST /api/v1/branch": "/api/v1/branch",
+    "PATCH /api/v1/branch/{branchUuid}": "/api/v1/branch/{branchUuid}",
+    "POST /api/v1/product": "/api/v1/product",
+    "DELETE /api/v1/product/{productUuid}": "/api/v1/product/{productUuid}",
+    "PATCH /api/v1/product/{productUuid}": "/api/v1/product/{productUuid}",
+    "GET /api/v1/product/top/{franchiseUuid}": "/api/v1/product/top/{franchiseUuid}",
+    "GET /health": "/actuator/health"
+  }
+}

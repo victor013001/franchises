@@ -37,3 +37,12 @@ out/
 .vscode/
 
 .env
+
+### TERRAFORM ###
+*.terraform/
+*.tfplan
+tfplan
+*.tfstate
+*.tfstate.*
+*.terraform
+*.terraform.*
