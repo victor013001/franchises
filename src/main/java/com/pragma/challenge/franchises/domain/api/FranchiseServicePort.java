@@ -11,4 +11,12 @@ public interface FranchiseServicePort {
    * @return Publisher that emits the created Franchise
    */
   Mono<Franchise> createFranchise(Franchise franchise);
+
+  /**
+   * Update a franchise by uuid
+   *
+   * @param franchise The franchise to update
+   * @return Void Publisher
+   */
+  Mono<Void> updateFranchise(Franchise franchise);
 }

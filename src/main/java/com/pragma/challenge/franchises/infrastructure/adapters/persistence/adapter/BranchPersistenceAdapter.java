@@ -43,4 +43,16 @@ public class BranchPersistenceAdapter implements BranchPersistencePort {
     log.info("{} Getting Branch id by uuid: {}.", LOG_PREFIX, uuid);
     return branchRepository.getIdByUuid(uuid);
   }
+
+  @Override
+  public Mono<Integer> checkNewBranchNameUnique(String name, String uuid) {
+    log.info("{} Checking if new Branch Name {} is unique.", LOG_PREFIX, name);
+    return branchRepository.newNameUnique(name, uuid);
+  }
+
+  @Override
+  public Mono<Void> updateBranch(String uuid, String name) {
+    log.info("{} Updating name of Branch with uuid: {}.", LOG_PREFIX, uuid);
+    return branchRepository.updateBranchByUuid(uuid, name);
+  }
 }

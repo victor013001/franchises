@@ -11,4 +11,5 @@ public class ConstantsRoute {
   public static final String PRODUCT_UUID_PARAM = "productUuid";
   public static final String TOP_PRODUCT_BASE_PATH = "/top";
   public static final String FRANCHISE_UUID_PARAM = "franchiseUuid";
+  public static final String BRANCH_UUID_PARAM = "branchUuid";
 }
