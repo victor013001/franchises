@@ -1,14 +1,15 @@
 package com.pragma.challenge.franchises.domain.usecase;
 
 import com.pragma.challenge.franchises.domain.api.BranchServicePort;
+import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BadRequest;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BranchAlreadyExists;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BranchNotFound;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.FranchiseNotFound;
 import com.pragma.challenge.franchises.domain.model.Branch;
 import com.pragma.challenge.franchises.domain.spi.BranchPersistencePort;
 import com.pragma.challenge.franchises.domain.spi.FranchisePersistencePort;
-import com.pragma.challenge.franchises.domain.validation.ValidNotBlank;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
@@ -19,11 +20,9 @@ public class BranchUseCase implements BranchServicePort {
 
   @Override
   public Mono<Branch> addToFranchise(Branch branch) {
-    return Mono.fromCallable(
-            () -> {
-              ValidNotBlank.valid(branch);
-              return branch;
-            })
+    return Mono.just(branch)
+        .filter(this::isValidBranch)
+        .switchIfEmpty(Mono.error(BadRequest::new))
         .flatMap(
             validBranch ->
                 franchisePersistencePort
@@ -44,11 +43,9 @@ public class BranchUseCase implements BranchServicePort {
 
   @Override
   public Mono<Void> updateBranch(Branch branch) {
-    return Mono.fromCallable(
-            () -> {
-              ValidNotBlank.valid(branch);
-              return branch;
-            })
+    return Mono.just(branch)
+        .filter(this::isValidBranch)
+        .switchIfEmpty(Mono.error(BadRequest::new))
         .flatMap(
             validBranch ->
                 branchPersistencePort
@@ -64,5 +61,9 @@ public class BranchUseCase implements BranchServicePort {
                     .flatMap(
                         validData ->
                             branchPersistencePort.updateBranch(branch.uuid(), branch.name())));
+  }
+
+  private boolean isValidBranch(Branch branch) {
+    return Strings.isNotBlank(branch.name()) && Strings.isNotBlank(branch.franchiseUuid());
   }
 }

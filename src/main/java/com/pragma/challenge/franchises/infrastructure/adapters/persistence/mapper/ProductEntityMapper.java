@@ -1,9 +1,7 @@
 package com.pragma.challenge.franchises.infrastructure.adapters.persistence.mapper;
 
 import com.pragma.challenge.franchises.domain.model.Product;
-import com.pragma.challenge.franchises.domain.model.TopProduct;
 import com.pragma.challenge.franchises.infrastructure.adapters.persistence.entity.ProductEntity;
-import com.pragma.challenge.franchises.infrastructure.adapters.persistence.projection.TopProductProjection;
 import java.util.Objects;
 import java.util.UUID;
 import org.mapstruct.*;
@@ -24,8 +22,6 @@ public interface ProductEntityMapper {
     }
     return mapInternal(product, branchId);
   }
-
-  TopProduct toTopProduct(TopProductProjection projection);
 
   @AfterMapping
   default void setUuid(@MappingTarget ProductEntity productEntity) {

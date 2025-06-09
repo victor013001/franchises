@@ -1,15 +1,16 @@
 package com.pragma.challenge.franchises.domain.usecase;
 
+import static com.pragma.challenge.franchises.util.BranchDataUtil.getBranches;
 import static com.pragma.challenge.franchises.util.ProductDataUtil.getInvalidProduct;
 import static com.pragma.challenge.franchises.util.ProductDataUtil.getProduct;
 import static com.pragma.challenge.franchises.util.ProductDataUtil.getProductWithUuid;
-import static com.pragma.challenge.franchises.util.TopProductDataUtil.getTopProducts;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -202,18 +203,20 @@ class ProductUseCaseTest {
   @Test
   void getProductsWithMoreStockByFranchiseUuidSuccess() {
     var uuid = UUID.randomUUID().toString();
-    var topProducts = getTopProducts();
 
     when(franchisePersistencePort.franchiseExistsByUuid(anyString())).thenReturn(Mono.just(true));
-    when(productPersistencePort.getProductsWithMoreStockByFranchiseUuid(anyString()))
-        .thenReturn(Flux.fromIterable(topProducts));
+    when(branchPersistencePort.getBranchesByFranchiseUuid(anyString()))
+        .thenReturn(Flux.fromIterable(getBranches()));
+    when(productPersistencePort.getProductWithMoreStockInBranch(anyString()))
+        .thenReturn(Mono.just(getProduct()));
 
     StepVerifier.create(productUseCase.getProductsWithMoreStockByFranchiseUuid(uuid))
-        .expectNextSequence(topProducts)
+        .expectNextCount(2)
         .verifyComplete();
 
     verify(franchisePersistencePort).franchiseExistsByUuid(anyString());
-    verify(productPersistencePort).getProductsWithMoreStockByFranchiseUuid(anyString());
+    verify(branchPersistencePort).getBranchesByFranchiseUuid(anyString());
+    verify(productPersistencePort, times(2)).getProductWithMoreStockInBranch(anyString());
   }
 
   @Test

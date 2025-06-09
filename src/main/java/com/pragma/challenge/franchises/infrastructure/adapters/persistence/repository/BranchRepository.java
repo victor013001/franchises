@@ -5,6 +5,7 @@ import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
@@ -32,4 +33,13 @@ public interface BranchRepository extends ReactiveCrudRepository<BranchEntity, L
             WHERE uuid = :uuid
             """)
   Mono<Void> updateBranchByUuid(String uuid, String name);
+
+  @Query(
+"""
+SELECT b.*
+FROM branch b
+JOIN franchise f ON b.franchise_id = f.id
+WHERE f.uuid = :franchiseUuid
+""")
+  Flux<BranchEntity> getBranchesByFranchiseUuid(String franchiseUuid);
 }

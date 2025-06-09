@@ -1,7 +1,7 @@
 package com.pragma.challenge.franchises.infrastructure.adapters.persistence.adapter;
 
 import static com.pragma.challenge.franchises.util.ProductDataUtil.getProduct;
-import static com.pragma.challenge.franchises.util.TopProductProjectionDataUtil.getTopProductsProjection;
+import static com.pragma.challenge.franchises.util.ProductEntityDataUtil.getProductEntity;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -18,7 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -102,17 +101,16 @@ class ProductPersistenceAdapterTest {
   }
 
   @Test
-  void getProductsWithMoreStockByFranchiseUuid() {
-    var franchiseUuid = UUID.randomUUID().toString();
-    var topProductProjections = getTopProductsProjection();
-    when(productRepository.findTopStockProductsByFranchise(anyString()))
-        .thenReturn(Flux.fromIterable(topProductProjections));
+  void getProductWithMoreStockInBranch() {
+    var branchUuid = UUID.randomUUID().toString();
+    when(productRepository.findTopProductByBranchUuid(anyString()))
+        .thenReturn(Mono.just(getProductEntity()));
 
     StepVerifier.create(
-            productPersistenceAdapter.getProductsWithMoreStockByFranchiseUuid(franchiseUuid))
-        .expectNextCount(2)
+            productPersistenceAdapter.getProductWithMoreStockInBranch(branchUuid))
+        .expectNextCount(1)
         .verifyComplete();
 
-    verify(productRepository).findTopStockProductsByFranchise(franchiseUuid);
+    verify(productRepository).findTopProductByBranchUuid(branchUuid);
   }
 }

@@ -28,31 +28,37 @@ public class FranchisePersistenceAdapter implements FranchisePersistencePort {
 
   @Override
   public Mono<Boolean> franchiseExistsByName(String name) {
-    log.info("{} Checking if Franchise exists by name: {}.", LOG_PREFIX, name);
-    return franchiseRepository.existsByName(name);
+    return franchiseRepository
+        .existsByName(name)
+        .doFirst(() -> log.info("{} Checking if Franchise exists by name: {}.", LOG_PREFIX, name));
   }
 
   @Override
   public Mono<Boolean> franchiseExistsByUuid(String uuid) {
-    log.info("{} Checking if Franchise exists by uuid: {}.", LOG_PREFIX, uuid);
-    return franchiseRepository.existsByUuid(uuid);
+    return franchiseRepository
+        .existsByUuid(uuid)
+        .doFirst(() -> log.info("{} Checking if Franchise exists by uuid: {}.", LOG_PREFIX, uuid));
   }
 
   @Override
   public Mono<Long> getFranchiseIdByUuid(String uuid) {
-    log.info("{} Getting Franchise id by uuid: {}.", LOG_PREFIX, uuid);
-    return franchiseRepository.getIdByUuid(uuid);
+    return franchiseRepository
+        .getIdByUuid(uuid)
+        .doFirst(() -> log.info("{} Getting Franchise id by uuid: {}.", LOG_PREFIX, uuid));
   }
 
   @Override
   public Mono<Integer> checkNewFranchiseNameUnique(String name, String uuid) {
-    log.info("{} Checking if new Franchise Name {} is unique.", LOG_PREFIX, name);
-    return franchiseRepository.newNameUnique(name, uuid);
+    return franchiseRepository
+        .newNameUnique(name, uuid)
+        .doFirst(
+            () -> log.info("{} Checking if new Franchise Name {} is unique.", LOG_PREFIX, name));
   }
 
   @Override
   public Mono<Void> updateFranchise(String uuid, String name) {
-    log.info("{} Updating name of Franchise with uuid: {}.", LOG_PREFIX, uuid);
-    return franchiseRepository.updateFranchiseByUuid(uuid, name);
+    return franchiseRepository
+        .updateFranchiseByUuid(uuid, name)
+        .doFirst(() -> log.info("{} Updating name of Franchise with uuid: {}.", LOG_PREFIX, uuid));
   }
 }

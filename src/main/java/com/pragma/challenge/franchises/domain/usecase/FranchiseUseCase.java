@@ -1,12 +1,13 @@
 package com.pragma.challenge.franchises.domain.usecase;
 
 import com.pragma.challenge.franchises.domain.api.FranchiseServicePort;
+import com.pragma.challenge.franchises.domain.exceptions.standard_exception.BadRequest;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.FranchiseAlreadyExists;
 import com.pragma.challenge.franchises.domain.exceptions.standard_exception.FranchiseNotFound;
 import com.pragma.challenge.franchises.domain.model.Franchise;
 import com.pragma.challenge.franchises.domain.spi.FranchisePersistencePort;
-import com.pragma.challenge.franchises.domain.validation.ValidNotBlank;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
@@ -16,11 +17,9 @@ public class FranchiseUseCase implements FranchiseServicePort {
 
   @Override
   public Mono<Franchise> createFranchise(Franchise franchise) {
-    return Mono.fromCallable(
-            () -> {
-              ValidNotBlank.valid(franchise);
-              return franchise;
-            })
+    return Mono.just(franchise)
+        .filter(this::isValidFranchise)
+        .switchIfEmpty(Mono.error(BadRequest::new))
         .flatMap(
             validFranchise ->
                 franchisePersistencePort
@@ -32,11 +31,9 @@ public class FranchiseUseCase implements FranchiseServicePort {
 
   @Override
   public Mono<Void> updateFranchise(Franchise franchise) {
-    return Mono.fromCallable(
-            () -> {
-              ValidNotBlank.valid(franchise);
-              return franchise;
-            })
+    return Mono.just(franchise)
+        .filter(this::isValidFranchise)
+        .switchIfEmpty(Mono.error(BadRequest::new))
         .flatMap(
             validFranchise ->
                 franchisePersistencePort
@@ -53,5 +50,9 @@ public class FranchiseUseCase implements FranchiseServicePort {
                         validData ->
                             franchisePersistencePort.updateFranchise(
                                 franchise.uuid(), franchise.name())));
+  }
+
+  private boolean isValidFranchise(Franchise franchise) {
+    return Strings.isNotBlank(franchise.name());
   }
 }

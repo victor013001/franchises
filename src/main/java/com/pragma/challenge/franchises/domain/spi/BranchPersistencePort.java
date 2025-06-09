@@ -1,6 +1,7 @@
 package com.pragma.challenge.franchises.domain.spi;
 
 import com.pragma.challenge.franchises.domain.model.Branch;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface BranchPersistencePort {
@@ -54,4 +55,12 @@ public interface BranchPersistencePort {
    * @return Void Publisher
    */
   Mono<Void> updateBranch(String uuid, String name);
+
+  /**
+   * Flux of Branches for the Franchise Uuid
+   *
+   * @param franchiseUuid The Franchise Uuid
+   * @return Publisher that emits the Flux of the branches
+   */
+  Flux<Branch> getBranchesByFranchiseUuid(String franchiseUuid);
 }

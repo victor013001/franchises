@@ -6,6 +6,7 @@ import com.pragma.challenge.franchises.infrastructure.adapters.persistence.mappe
 import com.pragma.challenge.franchises.infrastructure.adapters.persistence.repository.BranchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -28,31 +29,47 @@ public class BranchPersistenceAdapter implements BranchPersistencePort {
 
   @Override
   public Mono<Boolean> branchExistsByName(String name) {
-    log.info("{} Checking if Branch exists by name: {}.", LOG_PREFIX, name);
-    return branchRepository.existsByName(name);
+    return branchRepository
+        .existsByName(name)
+        .doFirst(() -> log.info("{} Checking if Branch exists by name: {}.", LOG_PREFIX, name));
   }
 
   @Override
   public Mono<Boolean> branchExistsByUuid(String uuid) {
-    log.info("{} Checking if the Branch exists by uuid: {}.", LOG_PREFIX, uuid);
-    return branchRepository.existsByUuid(uuid);
+    return branchRepository
+        .existsByUuid(uuid)
+        .doFirst(() -> log.info("{} Checking if the Branch exists by uuid: {}.", LOG_PREFIX, uuid));
   }
 
   @Override
   public Mono<Long> getBranchIdByUuid(String uuid) {
-    log.info("{} Getting Branch id by uuid: {}.", LOG_PREFIX, uuid);
-    return branchRepository.getIdByUuid(uuid);
+    return branchRepository
+        .getIdByUuid(uuid)
+        .doFirst(() -> log.info("{} Getting Branch id by uuid: {}.", LOG_PREFIX, uuid));
   }
 
   @Override
   public Mono<Integer> checkNewBranchNameUnique(String name, String uuid) {
-    log.info("{} Checking if new Branch Name {} is unique.", LOG_PREFIX, name);
-    return branchRepository.newNameUnique(name, uuid);
+    return branchRepository
+        .newNameUnique(name, uuid)
+        .doFirst(() -> log.info("{} Checking if new Branch Name {} is unique.", LOG_PREFIX, name));
   }
 
   @Override
   public Mono<Void> updateBranch(String uuid, String name) {
-    log.info("{} Updating name of Branch with uuid: {}.", LOG_PREFIX, uuid);
-    return branchRepository.updateBranchByUuid(uuid, name);
+    return branchRepository
+        .updateBranchByUuid(uuid, name)
+        .doFirst(() -> log.info("{} Updating name of Branch with uuid: {}.", LOG_PREFIX, uuid));
+  }
+
+  @Override
+  public Flux<Branch> getBranchesByFranchiseUuid(String franchiseUuid) {
+    return branchRepository
+        .getBranchesByFranchiseUuid(franchiseUuid)
+        .map(branchEntityMapper::toModel)
+        .doFirst(
+            () ->
+                log.info(
+                    "{} Getting branches for franchise with uuid: {}.", LOG_PREFIX, franchiseUuid));
   }
 }

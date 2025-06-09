@@ -11,9 +11,9 @@ import com.pragma.challenge.franchises.domain.model.TopProduct;
 import com.pragma.challenge.franchises.domain.spi.BranchPersistencePort;
 import com.pragma.challenge.franchises.domain.spi.FranchisePersistencePort;
 import com.pragma.challenge.franchises.domain.spi.ProductPersistencePort;
-import com.pragma.challenge.franchises.domain.validation.ValidIntRange;
-import com.pragma.challenge.franchises.domain.validation.ValidNotBlank;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -26,12 +26,9 @@ public class ProductUseCase implements ProductServicePort {
 
   @Override
   public Mono<Product> addToBranch(Product product) {
-    return Mono.fromCallable(
-            () -> {
-              ValidNotBlank.valid(product);
-              ValidIntRange.valid(product);
-              return product;
-            })
+    return Mono.just(product)
+        .filter(this::isValidProduct)
+        .switchIfEmpty(Mono.error(BadRequest::new))
         .flatMap(
             validProduct ->
                 branchPersistencePort
@@ -52,21 +49,23 @@ public class ProductUseCase implements ProductServicePort {
 
   @Override
   public Mono<Void> deleteProduct(String productUuid) {
-    return productPersistencePort
-        .productExistsByUuid(productUuid)
-        .filter(Boolean.TRUE::equals)
-        .switchIfEmpty(Mono.error(ProductNotFound::new))
-        .flatMap(productExists -> productPersistencePort.deleteByUuid(productUuid));
+    return Mono.just(productUuid)
+        .filter(Strings::isNotBlank)
+        .switchIfEmpty(Mono.error(BadRequest::new))
+        .flatMap(
+            validUuid ->
+                productPersistencePort
+                    .productExistsByUuid(productUuid)
+                    .filter(Boolean.TRUE::equals)
+                    .switchIfEmpty(Mono.error(ProductNotFound::new))
+                    .flatMap(productExists -> productPersistencePort.deleteByUuid(productUuid)));
   }
 
   @Override
   public Mono<Void> updateProduct(Product product) {
-    return Mono.fromCallable(
-            () -> {
-              ValidNotBlank.valid(product);
-              ValidIntRange.valid(product);
-              return product;
-            })
+    return Mono.just(product)
+        .filter(this::isValidProduct)
+        .switchIfEmpty(Mono.error(BadRequest::new))
         .flatMap(
             validProduct ->
                 productPersistencePort
@@ -87,12 +86,28 @@ public class ProductUseCase implements ProductServicePort {
 
   @Override
   public Flux<TopProduct> getProductsWithMoreStockByFranchiseUuid(String franchiseUuid) {
-    return franchisePersistencePort
-        .franchiseExistsByUuid(franchiseUuid)
-        .filter(Boolean.TRUE::equals)
-        .switchIfEmpty(Mono.error(FranchiseNotFound::new))
+    return Mono.just(franchiseUuid)
+        .filter(Strings::isNotBlank)
+        .switchIfEmpty(Mono.error(BadRequest::new))
         .flatMapMany(
-            exists ->
-                productPersistencePort.getProductsWithMoreStockByFranchiseUuid(franchiseUuid));
+            validUuid ->
+                franchisePersistencePort
+                    .franchiseExistsByUuid(validUuid)
+                    .filter(Boolean.TRUE::equals)
+                    .switchIfEmpty(Mono.error(FranchiseNotFound::new))
+                    .thenMany(branchPersistencePort.getBranchesByFranchiseUuid(validUuid)))
+        .flatMap(
+            branch ->
+                productPersistencePort
+                    .getProductWithMoreStockInBranch(branch.uuid())
+                    .map(
+                        product -> new TopProduct(branch.name(), product.name(), product.stock())));
+  }
+
+  private boolean isValidProduct(Product product) {
+    return Strings.isNotBlank(product.name())
+        && Strings.isNotBlank(product.branchUuid())
+        && Objects.nonNull(product.stock())
+        && product.stock() >= 1;
   }
 }
