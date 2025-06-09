@@ -1,8 +1,6 @@
 package com.pragma.challenge.franchises.domain.spi;
 
 import com.pragma.challenge.franchises.domain.model.Product;
-import com.pragma.challenge.franchises.domain.model.TopProduct;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface ProductPersistencePort {
@@ -59,10 +57,10 @@ public interface ProductPersistencePort {
   Mono<Integer> checkNewProductNameUnique(String name, String uuid);
 
   /**
-   * Get a Flux of Branches and Product with more Stock for the Franchise Uuid
+   * Get the first found Product with more Stock for the Branch Uuid
    *
-   * @param franchiseUuid The Franchise Uuid
-   * @return Publisher that emits the Flux of TopProducts by branches
+   * @param branchUuid The Branch Uuid
+   * @return Publisher that emits the first found Product with more stock
    */
-  Flux<TopProduct> getProductsWithMoreStockByFranchiseUuid(String franchiseUuid);
+  Mono<Product> getProductWithMoreStockInBranch(String branchUuid);
 }
