@@ -1,0 +1,463 @@
+type: collection.insomnia.rest/5.0
+name: Scratch Pad
+meta:
+  id: wrk_scratchpad
+  created: 1746050252635
+  modified: 1746050252635
+collection:
+  - name: Login
+    meta:
+      id: fld_cc9cd15311bf4ac5a0d739da718cb197
+      created: 1749583943115
+      modified: 1749606746162
+      sortKey: -1749583943115
+  - name: Create User
+    meta:
+      id: fld_8cda8c8b4f9b423eab3318086d1a4aec
+      created: 1749583983908
+      modified: 1749583983908
+      sortKey: -1749583983908
+  - name: Franchises
+    meta:
+      id: fld_c37e12794a28487bbf4dcf6fe9305f40
+      created: 1758578742940
+      modified: 1758578742940
+      sortKey: -1758578742940
+    children:
+      - url: http://localhost:8080/franchises/api/v1/product/top/:franchise_uuid
+        name: TOP PRODUCT BY FRANCHISE
+        meta:
+          id: req_d47a9da0e7034272b53d9f161fadddb0
+          created: 1758578819094
+          modified: 1758579384953
+          isPrivate: false
+          sortKey: -1758578819094
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.0.2
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: franchise_uuid
+            value: c9a27197-bec7-49c7-9ae0-0bf873d0d660
+      - url: http://localhost:8080/franchises/api/v1/franchise
+        name: CREATE FRANCHISE
+        meta:
+          id: req_be413ad93b8c4a8ea3d76bd2634a17e1
+          created: 1758579011868
+          modified: 1758579130249
+          isPrivate: false
+          sortKey: -1754081402980.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"name": "franchise-test"
+            }
+        headers:
+          - name: User-Agent
+            value: insomnia/11.0.2
+            id: pair_88b8f3ffae7b44c59eed2dd8ba4e4166
+          - id: pair_37b8f134541846d2a6bc7d372449c611
+            name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/franchises/api/v1/branch
+        name: CREATE BRANCH
+        meta:
+          id: req_d39fe73579904f88a34c2918e6ee1a13
+          created: 1758579148236
+          modified: 1758579182518
+          isPrivate: false
+          sortKey: -1751832694923.75
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"name": "branch-test",
+            	"franchiseUuid": "c9a27197-bec7-49c7-9ae0-0bf873d0d660"
+            }
+        headers:
+          - name: User-Agent
+            value: insomnia/11.0.2
+            id: pair_88b8f3ffae7b44c59eed2dd8ba4e4166
+          - id: pair_37b8f134541846d2a6bc7d372449c611
+            name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/franchises/api/v1/product/:productUuid
+        name: DELETE PRODUCT
+        meta:
+          id: req_16bbc09ecb94459e956d18a6171c136f
+          created: 1758579230160
+          modified: 1758579566364
+          isPrivate: false
+          sortKey: -1750146163781.1875
+        method: DELETE
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"name": "product-test-2",
+            	"stock": 10,
+            	"branchUuid": "9bfc22af-7e81-4c7d-a156-e7a395eec2b6"
+            }
+        headers:
+          - name: User-Agent
+            value: insomnia/11.0.2
+            id: pair_88b8f3ffae7b44c59eed2dd8ba4e4166
+          - id: pair_37b8f134541846d2a6bc7d372449c611
+            name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: productUuid
+            value: 62ff9375-b9f7-41ba-8609-6a483932bcb4
+      - url: http://localhost:8080/franchises/api/v1/product
+        name: CREATE PRODUCT
+        meta:
+          id: req_67b000ded1ac4648ad17c050d89b86b9
+          created: 1758579409829
+          modified: 1758579561374
+          isPrivate: false
+          sortKey: -1750146163881.1875
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"name": "product-test-2",
+            	"stock": 10,
+            	"branchUuid": "9bfc22af-7e81-4c7d-a156-e7a395eec2b6"
+            }
+        headers:
+          - name: User-Agent
+            value: insomnia/11.0.2
+            id: pair_88b8f3ffae7b44c59eed2dd8ba4e4166
+          - id: pair_37b8f134541846d2a6bc7d372449c611
+            name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/franchises/api/v1/franchise/:franchiseUuid
+        name: UPDATE FRANCHISE
+        meta:
+          id: req_6fc0b02a18db442e8d82bb4242439c40
+          created: 1758579453618
+          modified: 1758579492814
+          isPrivate: false
+          sortKey: -1752957048952.125
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"name": "franchise-test-edited"
+            }
+        headers:
+          - name: User-Agent
+            value: insomnia/11.0.2
+            id: pair_88b8f3ffae7b44c59eed2dd8ba4e4166
+          - id: pair_37b8f134541846d2a6bc7d372449c611
+            name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: franchiseUuid
+            value: c9a27197-bec7-49c7-9ae0-0bf873d0d660
+      - url: http://localhost:8080/franchises/api/v1/branch/:branchUuid
+        name: UPDATE BRANCH
+        meta:
+          id: req_1350d03aec554c0285242b52ae250987
+          created: 1758579508856
+          modified: 1758579536830
+          isPrivate: false
+          sortKey: -1750989429402.4688
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"name": "branch-test-edited"
+            }
+        headers:
+          - name: User-Agent
+            value: insomnia/11.0.2
+            id: pair_88b8f3ffae7b44c59eed2dd8ba4e4166
+          - id: pair_37b8f134541846d2a6bc7d372449c611
+            name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: branchUuid
+            value: 9bfc22af-7e81-4c7d-a156-e7a395eec2b6
+      - url: http://localhost:8080/franchises/api/v1/product/:productUUID
+        name: UPDATE PRODUCT
+        meta:
+          id: req_ea1b11b8fb6745329f78108d8fe5b0a0
+          created: 1758579574071
+          modified: 1758579725678
+          isPrivate: false
+          sortKey: -1750146163831.1875
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"name": "product-test-edited",
+            	"stock": 10
+            }
+        headers:
+          - name: User-Agent
+            value: insomnia/11.0.2
+            id: pair_88b8f3ffae7b44c59eed2dd8ba4e4166
+          - id: pair_37b8f134541846d2a6bc7d372449c611
+            name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: productUUID
+            value: c9a27197-bec7-49c7-9ae0-0bf873d0d660
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_99d30891da4bdcebc63947a8fc17f076de878684
+    created: 1746050682186
+    modified: 1749315197375
+  cookies:
+    - key: SESSION
+      value: d440ccba-f3b0-403c-9b7b-10912ad2e880
+      domain: localhost
+      path: /aws-challenge/
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-06T23:51:09.180Z
+      lastAccessed: 2025-05-07T19:37:46.492Z
+      sameSite: lax
+      id: 16d02574-8bf9-4e90-8319-beb5abb0fd96
+    - key: XSRF-TOKEN
+      value: eyJYU1JGLVRPS0VOIjoibUJFNHNmK1NJOXFERWpLeGdJRkhBUzFnMXBKbDd2ZHFHcnBOcnh4UjdTdlVOMGwzZFZRWHo0ZStCblVQYzVTL0xtajgwQk1MUFZBR1Jqclh1cGlHc3l0VVF5OGRvWDhxRDUxU3k0Yno4T2pCdHg1MFJKSWk2V052OFJ1VGFwWFJ3YTdnNFVOTVI3dGtnMjcwcTZhTmhIaHhLYkd3aUVMdXR3QjM1aW9JaVZVPSJ9.PNl5eI1j8E1aU2CvX%2Fw9oRFXDKlbVd5uXTzbCGdb4hY
+      domain: localhost
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-06T23:51:09.180Z
+      lastAccessed: 2025-05-07T19:38:09.671Z
+      sameSite: strict
+      id: bccbf81e-5bb8-4fe1-aad8-8aff50848d0e
+    - key: lang
+      value: en
+      domain: localhost
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-06T23:51:09.180Z
+      lastAccessed: 2025-05-07T19:38:09.671Z
+      sameSite: lax
+      id: 668173cb-1dc1-413d-a8ff-44d47f278787
+    - key: page-data
+      value: eyJwYWdlLWRhdGEiOnsiY2hhbGxlbmdlUGFyYW1ldGVycyI6eyJzaWduSW4iOnsiaWRlbnRpdHlQcm92aWRlcnMiOnsiY29nbml0byI6eyJzaWduSW5BdHRyaWJ1dGVzIjpbInVzZXJuYW1lIiwiZW1haWwiXSwicmVxdWlyZVBhc3N3b3JkIjpmYWxzZX19fSwic2lnblVwIjp7ImlkZW50aXR5UHJvdmlkZXJzIjp7ImNvZ25pdG8iOnsic2lnbkluQXR0cmlidXRlcyI6WyJ1c2VybmFtZSIsImVtYWlsIl0sInJlcXVpcmVQYXNzd29yZCI6ZmFsc2V9fSwicmVxdWlyZWRBdHRyaWJ1dGVzIjpbImVtYWlsIiwibmlja25hbWUiXSwicGFzc3dvcmRQb2xpY3kiOnsibWluaW11bUxlbmd0aCI6OCwicmVxdWlyZUxvd2VyY2FzZSI6dHJ1ZSwicmVxdWlyZU51bWJlcnMiOnRydWUsInJlcXVpcmVTeW1ib2xzIjp0cnVlLCJyZXF1aXJlVXBwZXJjYXNlIjp0cnVlfX0sInJlcXVlc3RSZXNldFBhc3N3b3JkIjp7ImNvZ25pdG9JZGVudGl0eVByb3ZpZGVyIjp7InNpZ25JbkF0dHJpYnV0ZXMiOlsidXNlcm5hbWUiLCJlbWFpbCJdLCJyZXF1aXJlUGFzc3dvcmQiOmZhbHNlfX19LCJjbGllbnRJZCI6IjM0amFxMXN0aGZkNmo0cXN2cGQ4YmRoZmlzIn19.n8Pkye773Zdqr%2FFRZKcCmvlZ504i2upwCrzHI22MYY8
+      domain: localhost
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-06T23:51:09.180Z
+      lastAccessed: 2025-05-07T19:38:09.671Z
+      sameSite: strict
+      id: 030e21e8-89ba-401b-b09a-ac86338d486c
+    - key: cognito
+      domain: localhost
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-06T23:51:09.180Z
+      lastAccessed: 2025-05-06T23:51:09.180Z
+      id: 8850eb04-4bdf-42d7-8f89-38c1251605e2
+    - key: post-auth
+      domain: localhost
+      path: /passkeys
+      secure: true
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-06T23:51:09.180Z
+      lastAccessed: 2025-05-06T23:51:09.180Z
+      id: 815e08ab-56c6-4e83-9a60-7e4e4ce26e7a
+    - key: csrf-state
+      value: pJqVcSOjCsMLDtpEUJCs1yfotoVHNNmCvNuUo0pXiqk
+      domain: localhost
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-06T23:51:32.599Z
+      lastAccessed: 2025-05-07T19:38:09.671Z
+      sameSite: none
+      id: 4e156308-a6d6-4ab3-9142-6c9b220ada7a
+    - key: csrf-state-legacy
+      value: pJqVcSOjCsMLDtpEUJCs1yfotoVHNNmCvNuUo0pXiqk
+      domain: localhost
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-06T23:51:32.599Z
+      lastAccessed: 2025-05-07T19:38:09.671Z
+      id: cd18b6dc-4e8d-40b1-bdbe-e929dd024854
+    - key: SESSION
+      value: 48634da5-d6cb-42d9-963c-0b733afb997b
+      domain: devopscloudawslb-507237496.us-east-2.elb.amazonaws.com
+      path: /aws-challenge/
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-07T00:19:32.886Z
+      lastAccessed: 2025-05-07T00:19:32.886Z
+      id: cf77006b-039f-4c75-9877-b91f89359af6
+    - key: XSRF-TOKEN
+      value: eyJYU1JGLVRPS0VOIjoidFRiSzMvcGhVZURHeUFtZ2lmOE40L1h2T3E3R2JNS1BES1NYUW91MmVLUWc2MmF3Z25vaUg2ZXdKMklrbmNVVmVzY25GaGZzbS8zS0xqRFQ1NG56SHEvTkdxdFJ1ZDhBQUN3RkhQSmNMQmp4MGllaFVVNWVyS0dDRzRQcTBHeW4wcDZUZ1RtaVpxUEtCUUw1Rjl0aWxvYThVRDg3bjJQcHhUQmNhTFRYaWh3PSJ9.xdq9mDB5gWZGa6mP3Vh1sqffhOGyasOByMpGk4vTT%2BE
+      domain: devopscloudawslb-507237496.us-east-2.elb.amazonaws.com
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-07T00:19:32.887Z
+      lastAccessed: 2025-05-07T00:19:32.887Z
+      id: 631179b1-2911-4abd-8867-4cab70d34c93
+    - key: lang
+      value: en
+      domain: devopscloudawslb-507237496.us-east-2.elb.amazonaws.com
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-07T00:19:32.887Z
+      lastAccessed: 2025-05-07T00:19:32.887Z
+      id: 280bc062-cb54-4a68-87d7-27639f166ef7
+    - key: page-data
+      domain: devopscloudawslb-507237496.us-east-2.elb.amazonaws.com
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-07T00:19:32.887Z
+      lastAccessed: 2025-05-07T00:19:32.887Z
+      id: 1b146863-e3f8-45c0-bde2-77807ab447ab
+    - key: cognito
+      domain: devopscloudawslb-507237496.us-east-2.elb.amazonaws.com
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-07T00:19:32.887Z
+      lastAccessed: 2025-05-07T00:19:32.887Z
+      id: 58bc78dc-b960-411e-80c7-9700f6323db6
+    - key: post-auth
+      domain: devopscloudawslb-507237496.us-east-2.elb.amazonaws.com
+      path: /passkeys
+      secure: true
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-05-07T00:19:32.887Z
+      lastAccessed: 2025-05-07T00:19:32.887Z
+      id: 60757588-990a-4d30-8c91-a5dbf325d9c6
+    - key: AWSALBTG
+      value: vGrxRBsJrutElhmHE5AE1f0KFDVAETXNuuvWahhr7oZ+jGHtSV1zqE6LMlrzdLcrExMHgjIsNYvLs+Ls3RxP9HYd2MjtZc+JOI5aGMzd3LZZteKJRj4bY5DbWtnFQ2oY9xlfviHTErYeqdP3o+LNXVKxmsuSinglfvJD0SLE9viSaQPeiGg=
+      domain: 2cmygutn3i.execute-api.us-east-2.amazonaws.com
+      path: /
+      hostOnly: true
+      creation: 2025-05-07T18:36:23.201Z
+      lastAccessed: 2025-05-07T19:29:57.264Z
+      id: 04dddab1-63c8-44a7-b058-cc6c27f9674e
+    - key: AWSALBTGCORS
+      value: vGrxRBsJrutElhmHE5AE1f0KFDVAETXNuuvWahhr7oZ+jGHtSV1zqE6LMlrzdLcrExMHgjIsNYvLs+Ls3RxP9HYd2MjtZc+JOI5aGMzd3LZZteKJRj4bY5DbWtnFQ2oY9xlfviHTErYeqdP3o+LNXVKxmsuSinglfvJD0SLE9viSaQPeiGg=
+      domain: 2cmygutn3i.execute-api.us-east-2.amazonaws.com
+      path: /
+      secure: true
+      hostOnly: true
+      creation: 2025-05-07T18:36:23.202Z
+      lastAccessed: 2025-05-07T19:29:57.264Z
+      sameSite: none
+      id: 77d41245-efcb-4064-b018-c0739616394c
+    - key: JSESSIONID
+      value: C7CB927ACACC51DFE126F43152D61219
+      domain: localhost
+      path: /
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-06-07T16:53:17.374Z
+      lastAccessed: 2025-06-07T16:53:17.374Z
+      id: 2291984e-dac4-455f-bbae-85b5e7c33f00
+environments:
+  name: Base Environment
+  meta:
+    id: env_99d30891da4bdcebc63947a8fc17f076de878684
+    created: 1746050681901
+    modified: 1746577217688
+    isPrivate: false
