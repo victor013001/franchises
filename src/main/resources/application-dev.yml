@@ -15,12 +15,13 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, metrics, loggers
+        include: health, metrics, loggers, prometheus
       base-path: /
       path-mapping:
         health: actuator/health
         metrics: actuator/metrics
         loggers: actuator/loggers
+        prometheus: actuator/prometheus
   endpoint:
     health:
       probes:
